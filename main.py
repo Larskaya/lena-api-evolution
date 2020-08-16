@@ -7,7 +7,6 @@ import os # files system
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from EvolDataBase import EvolDataBase
-#from flask_login import LoginManager
 from UserLogin import UserLogin
 
 app = Flask(__name__)
@@ -117,6 +116,6 @@ def close_db(error):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0')
 
 
