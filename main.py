@@ -68,9 +68,14 @@ def registration():
 
 
 
-@app.route('/')
+@app.route('/main-page')
 def index():
     return render_template('index.html')
+
+
+@app.route('/')
+def documentation():
+    return render_template('docs.html')
 
 
 
