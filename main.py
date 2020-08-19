@@ -79,7 +79,7 @@ def documentation():
 
 
 
-@app.route('/chat', methods=['POST', 'GET'])
+@app.route('/messages', methods=['POST', 'GET'])
 def chat():
     user_id = 1
     code = '12345'
