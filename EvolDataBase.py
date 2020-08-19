@@ -58,18 +58,21 @@ class EvolDataBase:
 
 
     def checkAuthUserById(self, id):
-        self.__cur.execute(f"SELECT COUNT() as 'count' FROM auth_users WHERE id LIKE '{id}' ")
+        self.__cur.execute(f"SELECT COUNT() as 'count' FROM auth_users WHERE id='{id}' ")
         res = self.__cur.fetchone()
+        #print('FUNCTION CHECK')
         if res['count'] > 0:
-            print('error - such email already exists')
             return False
         return True
 
     def addAuthUser(self, id):
         try:
-            print('CHECK AUTH USER:', self.checkAuthUserById)
             if self.checkAuthUserById( id ):
-                code = random.sample( range(0, 10), 10 )
+                a = random.sample(range(0, 10), 10)  
+                code = ''
+                for b in a:
+                    code+=str(b)
+                #print('CODE:', code)
                 self.__cur.execute( "INSERT INTO auth_users VALUES(?, ?)", (id, code,) )
                 self.__db.commit()
         except sqlite3.Error as e:
@@ -80,14 +83,10 @@ class EvolDataBase:
 
 
     def userVerificationWhenSendingMessage(self, id, code):
-        #print('user data:', id, code)
         self.__cur.execute(f"SELECT COUNT() as 'count' FROM auth_users WHERE id='{id}' AND code='{code}'")
         res = self.__cur.fetchone()
-        #print( 'RESULT:', len(res) )
         if res['count'] > 0:
-            #print('TRUE')
             return True
-        #print('error - such email already exists')
         return False
         
 
@@ -99,4 +98,15 @@ class EvolDataBase:
             print( 'error adding '+ str(e) )
             return False
         return True
+
+
+    def getMessages(self):
+        try:
+            self.__cur.execute(f"SELECT * FROM messages")
+            res = self.__cur.fetchall()
+            if res: return res
+        except:
+            print('error reading from db')
+        return []
+
 

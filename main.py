@@ -78,19 +78,34 @@ def documentation():
     return render_template('docs.html')
 
 
-
-@app.route('/messages', methods=['POST', 'GET'])
-def chat():
-    user_id = 1
-    code = '12345'
-    if request.method == 'POST':
-        if dbase.userVerificationWhenSendingMessage(user_id, code):
-            print('FORM:', request.form)
-
-            if dbase.addMessageInDB( user_id, request.form['message-text'] ):
-                return render_template('communicate.html', message=request.form['message-text'])
+def post_messages(user_id, code):
+    if dbase.userVerificationWhenSendingMessage(user_id, code):
+        if dbase.addMessageInDB( user_id, request.form['message-text'] ):
+            return render_template('communicate.html', message=request.form['message-text'])
         else:
             return '<h2> some kind error (verification failed) </h2>'
+    return ''
+
+
+@app.route('/messages-get')
+def get_messages():
+    data = []
+    for m in dbase.getMessages():
+        mes = {'sender': m['user_id'], 'time': m['time']}
+        data.append(mes)
+        js = json.dumps(data, sort_keys=True, indent=4)
+    return js
+    
+
+
+@app.route('/messages', methods=['POST', 'GET'])
+def messages():
+    auth_user_id = 1
+    code = '9684372501'
+    if request.method == 'POST':
+        post_messages(auth_user_id, code)
+    elif request.method == 'GET':
+        get_messages()
     return render_template('communicate.html')
 
 
@@ -102,7 +117,7 @@ def login():
         hash = generate_password_hash( request.form['psw'] )
         if user_id and check_password_hash( hash, request.form['psw']):
             dbase.addAuthUser( int(user_id[0]) )
-            return jsonify( {"success": 'ok'} )
+            return jsonify( {"success": True} )
         return render_template('index.html')
     return render_template('login.html')
 
@@ -131,6 +146,6 @@ def close_db(error):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(debug=True)
 
 
