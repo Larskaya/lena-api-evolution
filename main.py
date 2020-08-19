@@ -1,13 +1,13 @@
 import flask
 from flask import Flask, request, jsonify, render_template, url_for, redirect
-import pymysql, json
-import sqlite3
-import os # files system
+import pymysql, json, sqlite3, os
+
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from EvolDataBase import EvolDataBase
 from UserLogin import UserLogin
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'GsGFfDduiAGF1344tyoDGaFagfG1'
@@ -43,6 +43,8 @@ def get_db():
     return flask.g.link_db
 
 
+
+
 dbase = None
 @app.before_request
 def before_request():
@@ -56,7 +58,7 @@ def before_request():
 def registration():
     if request.method == 'POST':
         hash = generate_password_hash( request.form['psw'] )
-        res = dbase.addUser( request.form['name'], hash, request.form['email'] ) 
+        res = dbase.addUser( request.form['name'], hash, request.form['login'], request.form['email'] ) 
         if res:
             #return "<p> user added </p>"
             return redirect( url_for('login') )
@@ -70,42 +72,50 @@ def registration():
 def index():
     return render_template('index.html')
 
-from flask import jsonify
-@app.route('/get_json')
-def return_json():
-    data = {'success': True}
-    id_user = 1
-    auth_user = dbase.addAuthUser(id_user)
-    if auth_user:
-        return jsonify(data) 
 
 
-
-
-@app.route('/login1', methods=['POST', 'GET'])
-def login():
+@app.route('/chat', methods=['POST', 'GET'])
+def chat():
+    user_id = 1
+    code = '12345'
     if request.method == 'POST':
-        user = dbase.getUser( request.form['email'] )
-        if user:
-            user_login = UserLogin().create(user)
+        if dbase.userVerificationWhenSendingMessage(user_id, code):
+            print('FORM:', request.form)
 
-        #print('USER:', user)
-        #print('Email:', request.form['email'])
-            print( 'JSON:', return_json(request.form['email']) )
-            return "<p> ok </p>"
-    return render_template('login.html')
+            if dbase.addMessageInDB( user_id, request.form['message-text'] ):
+                return render_template('communicate.html', message=request.form['message-text'])
+        else:
+            return '<h2> some kind error (verification failed) </h2>'
+    return render_template('communicate.html')
+
 
 
 @app.route('/login', methods=['POST', 'GET'])
-def xxx():
+def login():
     if request.method == 'POST':
-        user_id = dbase.getUserId( request.form['email'] )
-        print('USER ID:', user_id[0])
-        if user_id:
+        user_id = dbase.getUserId( request.form['login'] )
+        hash = generate_password_hash( request.form['psw'] )
+        if user_id and check_password_hash( hash, request.form['psw']):
             dbase.addAuthUser( int(user_id[0]) )
-            return True
-        return False
-    return render_template('index.html')
+            return jsonify( {"success": 'ok'} )
+        return render_template('index.html')
+    return render_template('login.html')
+
+
+
+@app.route('/users', methods=['POST', 'GET'])
+def get_auth_users():
+    if request.method == 'GET':
+        data = []
+        for u in dbase.getUsers():
+            user = {'login': u['login']}
+            data.append(user)
+        js = json.dumps(data, sort_keys=True, indent=4)
+        return js
+    else:
+        data = {'success': False}
+        return jsonify(data)
+
 
 
 @app.teardown_appcontext
@@ -116,6 +126,6 @@ def close_db(error):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run()
 
 
