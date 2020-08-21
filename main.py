@@ -1,6 +1,6 @@
 import flask
 from flask import Flask, request, jsonify, render_template, url_for, redirect
-import pymysql, json, sqlite3, os
+import pymysql, json, sqlite3, os, ast
 
 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -12,6 +12,7 @@ from UserLogin import UserLogin
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'GsGFfDduiAGF1344tyoDGaFagfG1'
 app.config.from_object(__name__)
+
 
 
 DATABASE = '/tmp/evolution.db'
@@ -73,40 +74,61 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/')
-def documentation():
-    return render_template('docs.html')
 
-
-def post_messages(user_id, code):
+#@app.route('/messages', methods=['POST'])
+def add_messages():
+    user_id = 1
+    code = '9684372501' 
     if dbase.userVerificationWhenSendingMessage(user_id, code):
         if dbase.addMessageInDB( user_id, request.form['message-text'] ):
             return render_template('communicate.html', message=request.form['message-text'])
         else:
-            return '<h2> some kind error (verification failed) </h2>'
-    return ''
+            return '<h2> some kind error (added failed) </h2>'
+    return '<h2> some kind error (verification failed) </h2>'
 
 
-@app.route('/messages-get')
-def get_messages():
+#@app.route('/messages', methods=['GET'])
+def return_messages():
     data = []
     for m in dbase.getMessages():
         mes = {'sender': m['user_id'], 'time': m['time']}
         data.append(mes)
         js = json.dumps(data, sort_keys=True, indent=4)
     return js
-    
+
+
+
+@app.route('/messages/<int:id>', methods=['PUT'])
+def edit_messages(id):
+    users = dbase.getAuthUsers()
+    res = [ user for user in users if user['id']==id ]
+    print('edit message:', res)
+    if not res:
+        return False
+    return True
+
+
+
+@app.route('/')
+def documentation():
+    return render_template( 'docs.html' )
+
 
 
 @app.route('/messages', methods=['POST', 'GET'])
 def messages():
-    auth_user_id = 1
+    user_id = 1
     code = '9684372501'
     if request.method == 'POST':
-        post_messages(auth_user_id, code)
+        if dbase.userVerificationWhenSendingMessage(user_id, code):
+            if dbase.addMessageInDB( user_id, request.form['message-text'] ):
+                return render_template('communicate.html', message=request.form['message-text'])
+            else:
+                return '<h2> some kind error (added failed) </h2>'
+        return '<h2> some kind error (verification failed) </h2>'
     elif request.method == 'GET':
-        get_messages()
-    return render_template('communicate.html')
+        return render_template('communicate.html')
+    return ''
 
 
 
@@ -123,9 +145,18 @@ def login():
 
 
 
-@app.route('/users', methods=['POST', 'GET'])
+@app.route('/users', methods=['POST', 'GET', 'PUT'])
 def get_auth_users():
-    if request.method == 'GET':
+    if request.method == 'PUT':
+        data = request.data
+        dict_data = data.decode("UTF-8")
+        mydata = ast.literal_eval(dict_data)
+        print('data:', mydata['test'])
+        return ''
+
+
+
+    elif request.method == 'GET':
         data = []
         for u in dbase.getUsers():
             user = {'login': u['login']}
