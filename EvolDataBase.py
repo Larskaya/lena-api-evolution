@@ -7,7 +7,7 @@ class EvolDataBase:
         self.__cur = db.cursor()
 
 
-    def getAuthUser(self, id):
+    def getUser(self, id):
         try:
             self.__cur.execute(f"SELECT name FROM users WHERE id='{id}'")
             res = self.__cur.fetchone()
@@ -24,7 +24,6 @@ class EvolDataBase:
         except:
             print('error reading from db')
         return []
-
 
     def getUserId(self, login):
         try:
@@ -55,7 +54,26 @@ class EvolDataBase:
             return False
         return True
 
+    
+    # AIUTHORIZED USERS
 
+    def getAuthUsers(self, id):
+        try:
+            self.__cur.execute(f"SELECT * FROM auth_users")
+            res = self.__cur.fetchone()
+            if res: return res
+        except:
+            print('error reading from db')
+        return []
+
+    def getAuthUser(self, id):
+        try:
+            self.__cur.execute(f"SELECT * FROM auth_users WHERE id='{id}'")
+            res = self.__cur.fetchone()
+            if res: return res
+        except:
+            print('error reading from db')
+        return []
 
     def checkAuthUserById(self, id):
         self.__cur.execute(f"SELECT COUNT() as 'count' FROM auth_users WHERE id='{id}' ")
@@ -68,11 +86,10 @@ class EvolDataBase:
     def addAuthUser(self, id):
         try:
             if self.checkAuthUserById( id ):
-                a = random.sample(range(0, 10), 10)  
+                lst = random.sample(range(0, 10), 10)  
                 code = ''
-                for b in a:
-                    code+=str(b)
-                #print('CODE:', code)
+                for n in lst:
+                    code+=str(n)
                 self.__cur.execute( "INSERT INTO auth_users VALUES(?, ?)", (id, code,) )
                 self.__db.commit()
         except sqlite3.Error as e:
@@ -90,6 +107,8 @@ class EvolDataBase:
         return False
         
 
+    # MESSAGES 
+
     def addMessageInDB(self, id, msg):
         try:
             self.__cur.execute( "INSERT INTO messages VALUES(?, ?, ?)", (id, msg, datetime.now(), ) )
@@ -98,7 +117,6 @@ class EvolDataBase:
             print( 'error adding '+ str(e) )
             return False
         return True
-
 
     def getMessages(self):
         try:

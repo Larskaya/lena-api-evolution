@@ -1,5 +1,3 @@
-
-
 CREATE TABLE IF NOT EXISTS users (
     id integer PRIMARY KEY AUTOINCREMENT,
     name text not null,
@@ -17,7 +15,11 @@ CREATE TABLE IF NOT EXISTS messages (
     user_id integer not null,
     message text not null,
     time datetime NOT NULL
-)
+);
 
-
+CREATE TABLE IF NOT EXISTS sectors (
+    id text not null,
+    users integer not null,
+    food integer not null
+);
 

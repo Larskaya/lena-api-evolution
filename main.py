@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from EvolDataBase import EvolDataBase
 from UserLogin import UserLogin
+from SectorsDB import SectorsDataBase
 
 
 app = Flask(__name__)
@@ -55,6 +56,74 @@ def before_request():
     dbase = EvolDataBase(db)
 
 
+
+@app.route('/sectors', methods=['GET'])
+def get_sectors():
+    db = SectorsDataBase( get_db() )
+    data = []
+    for s in db.getAllData():
+        sector = {'sector': ( s['id'], s['users'], s['food'])}
+        data.append(sector)
+    js = json.dumps(data, sort_keys=True, indent=4)
+    return js
+
+
+
+
+
+@app.route('/sectors/occupy', methods=['POST'])
+def add_user_to_sector():
+    # сделать проверку кода при добавлении в сектор
+    user_code = 'aFSEHRtfhaetfae1445T'
+    db = SectorsDataBase( get_db() )
+    permission = db.userVerificationWhenAddingToSector(request.form['user_id'])
+    print('PERMISSION -', permission)
+    if permission: 
+        users_in_sector = db.getUsersToSector( request.form['sector_id'] )
+        users = ''
+        for user in users_in_sector:
+            if user[0] != 0:
+                users += str(user[0]) + ', '
+        users += str(request.form['user_id'])
+        res = db.addUserToSector( request.form['sector_id'], users ) 
+        if res: return jsonify( {"success": True} )
+    return  jsonify( {"success": False} )
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+
+@app.route('/user_vertification/<int:user_id>')
+def userVerification(user_id):
+    db = SectorsDataBase( get_db() )
+    users = db.userVerificationWhenAddingToSector()
+    users_str = []
+    for user in users:
+        if str(user[0]) != '0':
+            users_str.append(str(user[0]))
+    if str(user_id) not in users_str[0].split(','):
+        return 'True'
+    return 'False'
+
+
+"""
+
+
+
+
+
+
+
+
 @app.route('/registration', methods=['POST', 'GET'])
 def registration():
     if request.method == 'POST':
@@ -64,7 +133,7 @@ def registration():
             #return "<p> user added </p>"
             return redirect( url_for('login') )
         else:
-            return "<p> add error </p>"
+            return jsonify( {"success": False} )
     return render_template('registration.html')
 
 
@@ -95,18 +164,6 @@ def return_messages():
         data.append(mes)
         js = json.dumps(data, sort_keys=True, indent=4)
     return js
-
-
-
-@app.route('/messages/<int:id>', methods=['PUT'])
-def edit_messages(id):
-    users = dbase.getAuthUsers()
-    res = [ user for user in users if user['id']==id ]
-    print('edit message:', res)
-    if not res:
-        return False
-    return True
-
 
 
 @app.route('/')
