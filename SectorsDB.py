@@ -1,5 +1,7 @@
 import sqlite3
 
+FIRST_AMOUNT = 1
+
 class SectorsDataBase:
     def __init__(self, db):
         self.__db = db
@@ -15,28 +17,30 @@ class SectorsDataBase:
             print('error reading from db')
         return []
 
-
-    def getSectorUsers(self):
+    def getSectorsUsers(self):
         self.__cur.execute(f"SELECT users FROM sectors")
         res = self.__cur.fetchall()
         if res: return res
         return False
 
-
-
-    def userVerificationWhenAddingToSector(self, user_id):
-        users = self.getSectorUsers()
-        users_lst = []
-        for user in users:
-            print('every USER:', user[0])
-            if str(user[0]) != '0':
-                users_lst.append(str(user[0]))
-        if len(users_lst) > 0:
-            if str(user_id) not in users_lst[0].split(','):
-                return True
-        elif len(users_lst) == 0:
-            return True
+    
+    def getSectorsID(self):
+        self.__cur.execute(f"SELECT id FROM sectors")
+        res = self.__cur.fetchall()
+        if res: return res
         return False
+
+
+    def getSectors(self):
+        try:
+            self.__cur.execute(f"SELECT * FROM sectors")
+            res = self.__cur.fetchall()
+            if res: return res
+        except: 
+            print('error reading from db')
+        return []
+
+
 
 
     def getUsersToSector(self, sector_id):
@@ -52,7 +56,8 @@ class SectorsDataBase:
 
     def addUserToSector(self, sector_id, user_id):
         try:
-            self.__cur.execute( f"UPDATE sectors SET users='{user_id}' WHERE id='{sector_id}' " )
+            print('add user to sector USER ID', user_id)
+            self.__cur.execute( f"UPDATE sectors SET users=users || ', {str(user_id)}', amounts='{user_id}/{FIRST_AMOUNT}' WHERE id='{sector_id}' " )
             self.__db.commit()
         except sqlite3.Error as e:
             print( 'error adding '+ str(e) )

@@ -18,7 +18,7 @@ app.config.from_object(__name__)
 
 DATABASE = '/tmp/evolution.db'
 DEBUG = True
-SECRET_KEY = 'afe\shrtrjkl234frh#geash@hdrfzh1233'
+SECRET_KEY = 'afe\shrtrjkl234frh#geashhdrfzh1233'
 
 app.config.update( dict(DATABASE=os.path.join(app.root_path, 'evolution.db')) )
 
@@ -45,8 +45,6 @@ def get_db():
     return flask.g.link_db
 
 
-
-
 dbase = None
 @app.before_request
 def before_request():
@@ -68,60 +66,17 @@ def get_sectors():
     return js
 
 
-
-
-
-@app.route('/sectors/occupy', methods=['POST'])
-def add_user_to_sector():
-    # сделать проверку кода при добавлении в сектор
-    user_code = 'aFSEHRtfhaetfae1445T'
+def user_id_check2(user_id, sector_id):
     db = SectorsDataBase( get_db() )
-    permission = db.userVerificationWhenAddingToSector(request.form['user_id'])
-    print('PERMISSION -', permission)
-    if permission: 
-        users_in_sector = db.getUsersToSector( request.form['sector_id'] )
-        users = ''
-        for user in users_in_sector:
-            if user[0] != 0:
-                users += str(user[0]) + ', '
-        users += str(request.form['user_id'])
-        res = db.addUserToSector( request.form['sector_id'], users ) 
-        if res: return jsonify( {"success": True} )
-    return  jsonify( {"success": False} )
-
-
-
-
-
-
-
-
-
-
-
-
-"""
-
-@app.route('/user_vertification/<int:user_id>')
-def userVerification(user_id):
-    db = SectorsDataBase( get_db() )
-    users = db.userVerificationWhenAddingToSector()
-    users_str = []
-    for user in users:
-        if str(user[0]) != '0':
-            users_str.append(str(user[0]))
-    if str(user_id) not in users_str[0].split(','):
-        return 'True'
-    return 'False'
-
-
-"""
-
-
-
-
-
-
+    users_in_sector = db.getUsersToSector( sector_id )
+    users = ''
+    for user in users_in_sector:
+        if user[0] != 0:
+            users += str(user[0]) + ', '
+    users += str(user_id)
+    res = db.addUserToSector( sector_id, users ) 
+    if res: return True
+    return  False
 
 
 @app.route('/registration', methods=['POST', 'GET'])
@@ -131,7 +86,7 @@ def registration():
         res = dbase.addUser( request.form['name'], hash, request.form['login'], request.form['email'] ) 
         if res:
             #return "<p> user added </p>"
-            return redirect( url_for('login') )
+            return jsonify( {"success": True} )
         else:
             return jsonify( {"success": False} )
     return render_template('registration.html')
@@ -144,28 +99,6 @@ def index():
 
 
 
-#@app.route('/messages', methods=['POST'])
-def add_messages():
-    user_id = 1
-    code = '9684372501' 
-    if dbase.userVerificationWhenSendingMessage(user_id, code):
-        if dbase.addMessageInDB( user_id, request.form['message-text'] ):
-            return render_template('communicate.html', message=request.form['message-text'])
-        else:
-            return '<h2> some kind error (added failed) </h2>'
-    return '<h2> some kind error (verification failed) </h2>'
-
-
-#@app.route('/messages', methods=['GET'])
-def return_messages():
-    data = []
-    for m in dbase.getMessages():
-        mes = {'sender': m['user_id'], 'time': m['time']}
-        data.append(mes)
-        js = json.dumps(data, sort_keys=True, indent=4)
-    return js
-
-
 @app.route('/')
 def documentation():
     return render_template( 'docs.html' )
@@ -174,18 +107,28 @@ def documentation():
 
 @app.route('/messages', methods=['POST', 'GET'])
 def messages():
-    user_id = 1
-    code = '9684372501'
     if request.method == 'POST':
+        code = request.form['code']
+        user_id = request.form['user_id']
+        message = request.form['message']
+        if not dbase.isAuthValid(user_id, code):
+            return jsonify( {"success": False, "error": "not authorized"} )
         if dbase.userVerificationWhenSendingMessage(user_id, code):
-            if dbase.addMessageInDB( user_id, request.form['message-text'] ):
-                return render_template('communicate.html', message=request.form['message-text'])
+            if dbase.addMessageInDB( user_id, message ):
+                return jsonify( {"success": True} )
             else:
-                return '<h2> some kind error (added failed) </h2>'
-        return '<h2> some kind error (verification failed) </h2>'
+                return jsonify( {"success": False, "error": "some kind error (added failed)"} )
+        return jsonify( {"success": False, "error": "some kind error (verification failed)"} )
+
     elif request.method == 'GET':
-        return render_template('communicate.html')
-    return ''
+        data = []
+        for m in dbase.getMessages():
+            mes = {'user_id': m['user_id'], 'message': m['message'], 'time': m['time'] }
+            data.append(mes)
+
+        js = json.dumps({'data':data}, sort_keys=True, indent=4)
+        return js
+    return jsonify( {"success": False} )
 
 
 
@@ -193,13 +136,16 @@ def messages():
 def login():
     if request.method == 'POST':
         user_id = dbase.getUserId( request.form['login'] )
-        hash = generate_password_hash( request.form['psw'] )
-        if user_id and check_password_hash( hash, request.form['psw']):
-            dbase.addAuthUser( int(user_id[0]) )
-            return jsonify( {"success": True} )
-        return render_template('index.html')
-    return render_template('login.html')
+        user_id = user_id[0]
 
+        user_hpsw = dbase.getUserPsw( user_id )[0]
+        print('PSWhASH:', user_hpsw, request.form['psw'])
+        if check_password_hash( user_hpsw, request.form['psw']):
+            code = dbase.addAuthUser( int(user_id) )
+            if code:
+                return jsonify( {"success": True, "code": code, "id": user_id} )
+        return jsonify( {"success": False} )
+    return render_template('docs.html')
 
 
 @app.route('/users', methods=['POST', 'GET', 'PUT'])
@@ -211,7 +157,7 @@ def get_auth_users():
         print('data:', mydata['test'])
         return ''
 
-
+    #elif request.method == 'POST':
 
     elif request.method == 'GET':
         data = []
@@ -223,6 +169,10 @@ def get_auth_users():
     else:
         data = {'success': False}
         return jsonify(data)
+
+
+
+import sectors
 
 
 

@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS messages (
 
 CREATE TABLE IF NOT EXISTS sectors (
     id text not null,
-    users integer not null,
-    food integer not null
+    users text not null,
+    food integer not null,
+    amounts text not null
 );
 
