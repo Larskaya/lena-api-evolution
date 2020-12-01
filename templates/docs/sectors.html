@@ -19,7 +19,7 @@
                 </li>
             </ul>
             <h4>response</h4>
-            <p> json: {'status':'ok' }  </p>
+            <p> json: {'success':True }  </p>
         </td>
         <td>
             <div class=''>
@@ -51,4 +51,16 @@
             <p> json: { 'data': [...] }  </p>
         </td>
     </tr>
+
+    <div class=''>
+        <p> new sector </p>
+        <form action='/sector/add' method='post' >
+            <p> <label> position left: </label> <input type='text' name='position_left' value='' required/> </p>
+            <p> <label> position top: </label> <input type='text' name='position_top' value='' required/> </p>
+            <p> <label> users: </label> <input type='text' name='users' value='' required/> </p>
+            <p> <label> food: </label> <input type='text' name='food' value='' required/> </p>
+            <p> <input type='submit' value='добавить' /></p>
+        </form>
+    </div>
+
 </table
