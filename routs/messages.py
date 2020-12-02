@@ -1,3 +1,6 @@
+
+from __main__ import app, get_db
+
 @app.route('/messages', methods=['POST', 'GET'])
 def messages():
     if request.method == 'POST':

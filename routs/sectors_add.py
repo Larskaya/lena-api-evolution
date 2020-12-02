@@ -1,4 +1,7 @@
 
+from __main__ import app, get_db
+from database.SectorsDB import SectorsDataBase
+
 @app.route('/sector/add', methods=['POST'])
 def add_sector():
     db = SectorsDataBase( get_db() )

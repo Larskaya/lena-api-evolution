@@ -7,9 +7,8 @@ from time import sleep
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from EvolDataBase import EvolDataBase
-from UserLogin import UserLogin
-from SectorsDB import SectorsDataBase
+# from database import EvolDataBase
+# from database import SectorsDB
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'GsGFfDduiAGF1344tyoDGaFagfG1'
@@ -37,13 +36,13 @@ def get_db():
         flask.g.link_db = connect_db()
     return flask.g.link_db
 
-dbase = None
-@app.before_request
-def before_request():
-    """ Установление соединения с бд перед выполнением запроса  """
-    global dbase 
-    db = get_db()
-    dbase = EvolDataBase(db)
+# dbase = None
+# @app.before_request
+# def before_request():
+#     """ Установление соединения с бд перед выполнением запроса  """
+#     global dbase 
+#     db = get_db()
+#     dbase = EvolDataBase(db)
 
 @app.route('/main-page')
 def index():
@@ -54,17 +53,17 @@ def index():
 def documentation():
     return render_template( 'docs.html' )
 
-@app.route('/delete_data', methods=['GET'])
-def delete_data_from_table():
-    #print('DATA BASE1 -', dbase)
-    db = get_db()
-    dbase = EvolDataBase(db)
-    print('DATA BASE2 -', dbase)
-    #result2 = dbase.get_empty_table('auth_users')
-    if dbase.get_empty_table(): return jsonify( {"success": True, "data": 'Data was successfully deleted!'} )
-    return jsonify( {"success": False} )
+# @app.route('/delete_data', methods=['GET'])
+# def delete_data_from_table():
+#     #print('DATA BASE1 -', dbase)
+#     db = get_db()
+#     dbase = EvolDataBase(db)
+#     print('DATA BASE2 -', dbase)
+#     #result2 = dbase.get_empty_table('auth_users')
+#     if dbase.get_empty_table(): return jsonify( {"success": True, "data": 'Data was successfully deleted!'} )
+#     return jsonify( {"success": False} )
 
-print('delete data -', delete_data_from_table())
+#print('delete data -', delete_data_from_table())
 
 # @app.route('/users', methods=['POST', 'GET', 'PUT'])
 # def get_auth_users():

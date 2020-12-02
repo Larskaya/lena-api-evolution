@@ -1,8 +1,11 @@
+from __main__ import app, get_db
+from database.EvolDataBase import EvolDataBase
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
         #print('form of login -', request.form['login'])
+        dbase = EvolDataBase( get_db() )
         user_id = dbase.getUserId( request.form['login'] )
         print('user id -', user_id)
         user_id = user_id[0]

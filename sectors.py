@@ -1,6 +1,7 @@
 from __main__ import app, get_db
-from SectorsDB import SectorsDataBase
-from EvolDataBase import EvolDataBase
+from database.SectorsDB import SectorsDataBase
+from database.EvolDataBase import EvolDataBase
+
 
 import flask
 from flask import request, jsonify

@@ -1,5 +1,5 @@
 from __main__ import app, get_db
-from SectorsDB import SectorsDataBase
+from database.SectorsDB import SectorsDataBase
 
 import flask, time
 from flask import request, jsonify
