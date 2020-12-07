@@ -1,5 +1,8 @@
 from __main__ import app, get_db
 from database.EvolDataBase import EvolDataBase
+import flask
+from flask import request, jsonify
+from werkzeug.security import check_password_hash
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():

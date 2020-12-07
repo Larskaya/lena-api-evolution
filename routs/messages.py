@@ -1,5 +1,5 @@
 
-from __main__ import app, get_db
+from __main__ import app
 
 @app.route('/messages', methods=['POST', 'GET'])
 def messages():

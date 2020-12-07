@@ -108,16 +108,20 @@ def sector_id_check(sector_id):
 
 
 def add_user_to_sector(user_id, sector_id, code):
+    # существует ли введенный сектор 
     print(1, sector_id_check(sector_id))
     if sector_id_check(sector_id):
+        # есть ли проверяемый пользователь в другом секторе
         print(2, is_user_in_any_sector(user_id))
         if is_user_in_any_sector(user_id):
-
+            # проверка количества сущетсв пользователя 
             print(3, has_user_enough_amount_in_neighbors(sector_id, user_id))
             if has_user_enough_amount_in_neighbors(sector_id, user_id):
                 dbase.addUserToSector( sector_id, user_id )
                 print(True, 'where amount >= 50')
                 return True
+
+        # пользователя еще нет в секторе
         else:
             dbase.addUserToSector( sector_id, user_id )
         # dbase.addUserCreaturesAmount( sector_id, user_id, 1 )
@@ -128,13 +132,17 @@ def add_user_to_sector(user_id, sector_id, code):
 
 @app.route('/sectors/occupy', methods=['POST']) # to do PUT
 def addMAIN():
+    # got all data for add
     user_id = request.form['user_id']
     sector_id = request.form['sector_id']
     code = request.form['code']
     db = EvolDataBase( get_db() )
 
+    # check authorization
     if not db.isAuthValid(user_id, code):
-        return jsonify( {"success": False, "error": "not authorized"} )
+        return jsonify( {"success": False, "error": "unauthorized"} )
+
+    
     if add_user_to_sector(user_id, sector_id, code):
         increase_the_food(sector_id)
         return jsonify( {"success": True} )

@@ -1,4 +1,5 @@
-
+import flask
+from flask import request, jsonify
 from __main__ import app, get_db
 from database.SectorsDB import SectorsDataBase
 

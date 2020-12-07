@@ -7,8 +7,6 @@ from time import sleep
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# from database import EvolDataBase
-# from database import SectorsDB
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'GsGFfDduiAGF1344tyoDGaFagfG1'
@@ -52,18 +50,6 @@ def index():
 @app.route('/')
 def documentation():
     return render_template( 'docs.html' )
-
-# @app.route('/delete_data', methods=['GET'])
-# def delete_data_from_table():
-#     #print('DATA BASE1 -', dbase)
-#     db = get_db()
-#     dbase = EvolDataBase(db)
-#     print('DATA BASE2 -', dbase)
-#     #result2 = dbase.get_empty_table('auth_users')
-#     if dbase.get_empty_table(): return jsonify( {"success": True, "data": 'Data was successfully deleted!'} )
-#     return jsonify( {"success": False} )
-
-#print('delete data -', delete_data_from_table())
 
 # @app.route('/users', methods=['POST', 'GET', 'PUT'])
 # def get_auth_users():

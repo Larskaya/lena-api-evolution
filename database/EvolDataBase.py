@@ -7,15 +7,6 @@ class EvolDataBase:
         self.__cur = db.cursor()
 
 
-    def get_empty_table(self):
-        try:
-            self.__cur.execute("DELETE FROM users")
-            self.__db.commit()
-        except psycopg2.Error as e:
-            print( 'error delete '+ str(e) )
-            return False
-        return True
-
 
     # def getUser(self, id):
     #     try:
@@ -57,9 +48,8 @@ class EvolDataBase:
     def checkAddingUser(self, login):
         self.__cur.execute(f" SELECT COUNT(*) FROM users WHERE login LIKE '{login}' ")
         res = self.__cur.fetchone()
-        #print('COUNT -', res)
-        if res[0] > 0:
-            print('error - such email already exists')
+        print('COUNT -', res, 'lenght of result', len(res))
+        if len(res) > 0:
             return False
         return True
 
@@ -69,6 +59,8 @@ class EvolDataBase:
             if self.checkAddingUser(login):
                 self.__cur.execute( "INSERT INTO users (name, login, email, password) VALUES(%s, %s, %s, %s)", (name, login, email, hpsw))
                 self.__db.commit()
+            else:
+                return False
         except psycopg2.Error as e:
             print( 'error adding '+ str(e) )
             return False
