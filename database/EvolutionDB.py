@@ -35,7 +35,7 @@ class EvolDataBase:
             #print('login for check -', login, type(login))
             self.__cur.execute(f"SELECT id FROM users WHERE login='{login}'")
             res = self.__cur.fetchone()
-            print('result -', res)
+            #print('result -', res)
             if res: return res
         except:
             print('error reading from db')
@@ -46,17 +46,20 @@ class EvolDataBase:
 
 
     def checkAddingUser(self, login):
-        self.__cur.execute(f" SELECT COUNT(*) FROM users WHERE login LIKE '{login}' ")
+        print('check login:', login)
+        self.__cur.execute(f"SELECT COUNT(*) FROM users WHERE login='{login}' ")
         res = self.__cur.fetchone()
-        print('COUNT -', res, 'lenght of result', len(res))
-        if len(res) > 0:
+        print('check adding user -', res, 'lenght of result', len(res))
+        if res[0] > 0:
             return False
         return True
 
 
     def addUser(self, name, hpsw, login, email):
         try:
+            print('stupid check is failed')
             if self.checkAddingUser(login):
+                print('verification passed')
                 self.__cur.execute( "INSERT INTO users (name, login, email, password) VALUES(%s, %s, %s, %s)", (name, login, email, hpsw))
                 self.__db.commit()
             else:
@@ -175,12 +178,10 @@ class EvolDataBase:
 
 
 
-    def isAuthValid(self, id, code):
-        try:
-            self.__cur.execute(f"SELECT * FROM auth_users WHERE id='{id}' AND code='{code}'")
-            res = self.__cur.fetchone()
-            #print('AUTH USER:', res, None, res!=None)
-            if res != None: return True
-        except:
-            print('error reading from db')
+    def isAuthValid(self, id_, code):
+        self.__cur.execute("SELECT COUNT(*) FROM auth_users WHERE id=(%s) AND code=(%s)", (id_, code))
+        res = self.__cur.fetchone()
+        if res[0] > 0:
+            return True
         return False
+    

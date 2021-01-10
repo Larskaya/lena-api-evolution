@@ -1,16 +1,14 @@
 import flask
-from flask import Flask, request, jsonify, render_template, url_for, redirect
-import pymysql, json, psycopg2, os, ast
+from flask import Flask, render_template
+import psycopg2, os 
+from threading import Thread
 
-import time
-from time import sleep
-
-from werkzeug.security import generate_password_hash, check_password_hash
-
+#from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'GsGFfDduiAGF1344tyoDGaFagfG1'
 app.config.from_object(__name__)
+#socketio = SocketIO(app)
 
 DATABASE = '/tmp/evolution.db'
 DEBUG = True
@@ -28,28 +26,39 @@ def connect_db():
     )
     return conn
 
-def get_db():
-    """ соединение с бд, если оно еще не установлено"""
-    if not hasattr(flask.g, 'link_db'):
-        flask.g.link_db = connect_db()
-    return flask.g.link_db
-
-# dbase = None
-# @app.before_request
-# def before_request():
-#     """ Установление соединения с бд перед выполнением запроса  """
-#     global dbase 
-#     db = get_db()
-#     dbase = EvolDataBase(db)
-
-@app.route('/main-page')
-def index():
-    return render_template('index.html')
-
+# def get_db():
+#     """ соединение с бд, если оно еще не установлено"""
+#     if not hasattr(flask.g, 'link_db'):
+#         flask.g.link_db = connect_db()
+#     return flask.g.link_db
 
 @app.route('/')
 def documentation():
     return render_template( 'docs.html' )
+
+from routs import login, registration, sectors, add_sector, messages
+import sectors#, decrease_food
+
+
+
+#from increase_amount import increase_amount
+# thread1 = Thread(target=increase_amount)
+
+# def main():
+#     if __name__ == '__main__':
+#         app.run(port=3355)
+
+# thread2 = Thread(target=main)
+
+if __name__ == '__main__':
+    app.run(port=3355)
+
+# thread1.start()
+# print('111')
+# thread2.start()
+# print('222')
+
+
 
 # @app.route('/users', methods=['POST', 'GET', 'PUT'])
 # def get_auth_users():
@@ -69,11 +78,3 @@ def documentation():
 #     else:
 #         data = {'success': False}
 #         return jsonify(data)
-
-from routs import login, registration, sectors, sectors_add, messages
-import food_change, sectors
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
