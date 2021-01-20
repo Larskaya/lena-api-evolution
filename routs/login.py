@@ -11,6 +11,7 @@ def login():
     if request.method == 'POST':
         #print('login', request.form['login'])
         data = App.login(request.form['login'])
+        print('all data for login', data)
         user_id = data[0]
         user_hpsw = data[1]
 

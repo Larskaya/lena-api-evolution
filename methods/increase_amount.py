@@ -13,8 +13,10 @@ def connect_db():
 def updateSectorFood():
     try:
         # get sector id through the number of users 
-        sectors = getAllSectors()
+        sectors = getSectorsWithHerbivorous()
+        # искать не юзеров, а травоядных в секторах (они едят food, хищники едят только травоядных)
         data = getAmountUsersAndIDSectors(sectors)
+
         print('DATA', data)
         for el in data.keys():
             print(el, type(el))
@@ -30,6 +32,8 @@ def updateSectorFood():
         print( 'error updating '+ str(e) )
         return False
     return True
+    
+
 
 def updateUserCreaturesAmount():
     try:
@@ -43,15 +47,15 @@ def updateUserCreaturesAmount():
     return True
 
 
-def getAllSectors():
-    try:
-        db = connect_db()
-        cur = db.cursor()
-        cur.execute(f" SELECT * FROM creatures ")
-        res = cur.fetchall()
-    except psycopg2.Error as e:
-        return False
-    return res
+# def getAllSectors():
+#     try:
+#         db = connect_db()
+#         cur = db.cursor()
+#         cur.execute(f" SELECT * FROM creatures ")
+#         res = cur.fetchall()
+#     except psycopg2.Error as e:
+#         return False
+#     return res
 
 def getAmountUsersAndIDSectors(data):
     res = {}
@@ -70,27 +74,32 @@ def getAmountUsersAndIDSectors(data):
 
 
 
-def increase_amount():
+def getSectorsWithHerbivorous():
+    try:
+        db = connect_db()
+        cur = db.cursor()
+        cur.execute(f" SELECT * FROM creatures WHERE type='травоядный'")
+        res = cur.fetchall()
+    except psycopg2.Error as e:
+        return False
+    return res
+
+
+
+
+def processing():
     print('function of increase started')
     def increase():
         updateUserCreaturesAmount()
         updateSectorFood()
-        print('1')
+        #print('1')
         time.sleep(5)
         increase()
     increase()
 
-# def decrease_food():
-#     print('function of decrease started')
-#     def decrease():
-#         updateSectorFood()
-#         time.sleep(5)
-#         decrease()
-#     decrease()
 
 
 
 
 
-
-increase_amount()
+processing()

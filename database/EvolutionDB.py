@@ -6,61 +6,44 @@ class EvolDataBase:
         self.__db = db
         self.__cur = db.cursor()
 
+    def checkProfileId(self, id_):
+        self.__cur.execute(f"SELECT COUNT(*) FROM auth_users WHERE id='{id_}' ")
+        res = self.__cur.fetchone()
+        if res[0] > 0:
+            return True
+        return False
 
 
-    # def getUser(self, id):
-    #     try:
-    #         self.__cur.execute(f"SELECT name FROM users WHERE id='{id}'")
-    #         res = self.__cur.fetchone()
-    #         if res: return res
-    #     except:
-    #         print('error reading from db')
-    #     return []
-
-    # def getUsers(self):
-    #     try:
-    #         self.__cur.execute(f"SELECT * FROM users")
-    #         res = self.__cur.fetchall()
-    #         if res: return res
-    #     except:
-    #         print('error reading from db')
-    #     return []
-
-
-
+    def addProfile(self, id_, type_, color):
+        try:
+            self.__cur.execute('INSERT INTO profiles (user_id, type, color) VALUES (%s, %s, %s)', (id_, type_, color))
+            self.__db.commit()
+        except psycopg2.Error as e:
+            print('error adding', str(e))
 
 
     def getUserId(self, login):
+        #print('login', login)
+        #login = 'admin'
         try:
-            #print('login for check -', login, type(login))
             self.__cur.execute(f"SELECT id FROM users WHERE login='{login}'")
             res = self.__cur.fetchone()
-            #print('result -', res)
             if res: return res
         except:
             print('error reading from db')
         return []
 
-
-
-
-
     def checkAddingUser(self, login):
-        print('check login:', login)
         self.__cur.execute(f"SELECT COUNT(*) FROM users WHERE login='{login}' ")
         res = self.__cur.fetchone()
-        print('check adding user -', res, 'lenght of result', len(res))
         if res[0] > 0:
             return False
         return True
 
-
     def addUser(self, name, hpsw, login, email):
         try:
-            print('stupid check is failed')
             if self.checkAddingUser(login):
-                print('verification passed')
-                self.__cur.execute( "INSERT INTO users (name, login, email, password) VALUES(%s, %s, %s, %s)", (name, login, email, hpsw))
+                self.__cur.execute( "INSERT INTO users (name, login, email, hpsw) VALUES(%s, %s, %s, %s)", (name, login, email, hpsw))
                 self.__db.commit()
             else:
                 return False
@@ -68,18 +51,6 @@ class EvolDataBase:
             print( 'error adding '+ str(e) )
             return False
         return True
-
-
-    # AIUTHORIZED USERS
-
-    # def getAuthUsers(self, id):
-    #     try:
-    #         self.__cur.execute(f"SELECT * FROM auth_users")
-    #         res = self.__cur.fetchone()
-    #         if res: return res
-    #     except:
-    #         print('error reading from db')
-    #     return []
 
     def getAuthUser(self, id):
         try:
@@ -90,30 +61,16 @@ class EvolDataBase:
             print('error reading from db')
         return []
 
-    # def checkAuthUserById(self, id):
-    #     self.__cur.execute(f"SELECT COUNT() as 'count' FROM auth_users WHERE id='{id}' ")
-    #     res = self.__cur.fetchone()
-    #     #print('FUNCTION CHECK')
-    #     if res['count'] > 0:
-    #         return False
-    #     return True
-
-
-
-
-
-
     def updateAuthUser(self, code, id):
         try:
             self.__cur.execute(f"UPDATE auth_users SET code='{code}' WHERE id='{id}'")
-            print('ROW COUNT', self.__cur.rowcount)
+            #print('ROW COUNT', self.__cur.rowcount)
             self.__db.commit()
             if self.__cur.rowcount == 0: return False
         except sqlite3.Error as e:
             print( 'error adding '+ str(e) )
             return False
         return True
-
 
     def addAuthUser(self, id):
         code = ''
@@ -131,8 +88,6 @@ class EvolDataBase:
         print('CODE:', code)
         return code
 
-
-
     def userVerificationWhenSendingMessage(self, id, code):
         self.__cur.execute(f"SELECT COUNT(*) FROM auth_users WHERE id='{id}' AND code='{code}'")
         res = self.__cur.fetchone()
@@ -140,23 +95,16 @@ class EvolDataBase:
             return True
         return False
 
-
-    
     def getUserPsw(self, id):
         try:
-            print('ID:', id)
-            self.__cur.execute(f"SELECT password FROM users WHERE id={id}")
+            #print('ID:', id)
+            self.__cur.execute(f"SELECT hpsw FROM users WHERE id={id}")
             res = self.__cur.fetchone()
             print('result:', res)
             if res: return res
         except:
             print('error reading from db')
         return []
-
-
-
-
-    # MESSAGES 
 
     def addMessageInDB(self, id, msg):
         try:
@@ -175,8 +123,6 @@ class EvolDataBase:
         except:
             print('error reading from db')
         return []
-
-
 
     def isAuthValid(self, id_, code):
         self.__cur.execute("SELECT COUNT(*) FROM auth_users WHERE id=(%s) AND code=(%s)", (id_, code))

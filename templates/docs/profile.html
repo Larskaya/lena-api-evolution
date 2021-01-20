@@ -1,0 +1,35 @@
+<h2> /profile </h2>
+<table cellpadding=40>
+    <tr>
+        <td>
+            <h3>post</h3>
+            <h4>request</h4>
+                <ul>
+                    <li>
+                        head: -
+                    </li>
+                    <li>
+                        body: color, type
+                    </li>
+                    <li>
+                        url params: -
+                    </li>
+                </ul>
+        
+            <h4>response</h4>
+            <p> json: {'success':True }  </p>
+        <td>
+            <p> Профиль </p>
+            <form action='/profile' method='post' >
+                <p> <label> user id: </label> <input type='text' name='user_id' value='' required/> </p>
+                <p> <label> code: </label> <input type='text' name='code' value='' required/> </p>
+                <p> <label> color (красный, синий или зеленый): </label> <input type='text' name='color' value='' required/> </p>
+                <p> <label> type (травоядный или хищник): </label> <input type='text' name='type' value='' required/> </p>
+                <p> <input type='submit' value='создать' /></p>
+            </form>
+        </td>
+
+        </td>
+    </tr>
+</table>
+

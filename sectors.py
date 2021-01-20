@@ -70,16 +70,17 @@ def is_user_in_any_sector(user_id):
     sectors_data = App.getCreatures()
     users_in_sectors = []
     print('sectors data', sectors_data)
-    for sector in sectors_data:
-        print('--- sector', sector)
-        users_in_sectors.append(sector[1]) 
-    
-    print('--- users', users_in_sectors)
-    users = ''
-    for user in users_in_sectors:
-        print('--- --- user data', user, type(user), user_id, type(user_id))
-        if user == int(user_id):
-            return True
+    if sectors_data:
+        for sector in sectors_data:
+            print('--- sector', sector)
+            users_in_sectors.append(sector[1]) 
+        
+        print('--- users', users_in_sectors)
+        users = ''
+        for user in users_in_sectors:
+            print('--- --- user data', user, type(user), user_id, type(user_id))
+            if user == int(user_id):
+                return True
     return False
 
 
@@ -88,11 +89,12 @@ def sector_id_check(sector_id):
     # проверка введенного id сектора во всех секторах
     sectors_data = App.getSectors()
     print('--- sectors data -', sectors_data)
-    for sector in sectors_data:
-        id_ = sector[2]
-        print('--- --- sector data', id_, type(id_), sector_id, type(sector_id))
-        if id_ == int(sector_id):
-            return True
+    if sectors_data:
+        for sector in sectors_data:
+            id_ = sector[2]
+            print('--- --- sector data', id_, type(id_), sector_id, type(sector_id))
+            if id_ == int(sector_id):
+                return True
     return False
 
 # -------------------------------------------------------------------------------------------------------------
@@ -102,6 +104,7 @@ def check_of_received_data():
     user_id = request.form['user_id']
     sector_id = request.form['sector_id']
     code = request.form['code']
+    profile_type = request.form['profile_type']
     # авторизованность
     if not App.auth(user_id, code):
         return jsonify( {"success": False, "error": "unauthorized"} )
@@ -110,14 +113,15 @@ def check_of_received_data():
     if sector_id_check(sector_id): 
         # пользователя еще нет в секторах    
         if not is_user_in_any_sector(user_id): 
-            App.addUserCreaturesAmount( sector_id, user_id, 1 )
+            print('NEW USER')
+            App.addUserCreaturesAmount( sector_id, user_id, 1, profile_type )
             return jsonify( {"success": True} )
         else:
             return jsonify( {"success": False, "error": "user is in some sector(not neighbor)"} )
 
         # найти соседей. добавить, если >50
         if has_user_enough_amount_in_neighbors(sector_id, user_id):
-            App.addUserCreaturesAmount( sector_id, user_id, 1 )
+            App.addUserCreaturesAmount( sector_id, user_id, 1, profile_type )
             return jsonify( {"success": True} )
         else:
             return jsonify( {"success": False, "error": "not enough amount in neighbors"} )

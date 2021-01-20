@@ -1,0 +1,23 @@
+/login
+json: {'success':True, 'code':code, 'id': user_id }
+
+/messages
+json: {'success':True} - сообщение отправлено
+
+/sectors/occupy
+json: {'success':True }
+
+/sector/add
+json: {'success':True }
+добавлен сектор
+
+/registration
+json: {'success':True }
+
+/sectors
+json нет
+выводятся все сектора
+
+/profile
+создание профиля пользователя
+json: {'success':True }
