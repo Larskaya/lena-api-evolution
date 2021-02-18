@@ -23,16 +23,18 @@ def profile_color(color):
     return jsonify( {'error': "haven't color"} )
 
 @app.route('/profile', methods=['POST'])
-def get_profile_data():
+def add_profile():
+    code = request.form['code']
     user_id = request.form['user_id']
     color = request.form['color']
     type_ = request.form['type']
     if profile_type(type_) and profile_color(color):
-        res = App.add_profile(user_id, type_, color)
-        return jsonify( {'success': True} )
-    else:  return jsonify( {'error': 'profile not added'} )
+        res = App.add_profile(user_id, type_, color, code)
+        if res: return jsonify( {'success': True} )
+        else: return jsonify( {'error': 'profile not added(a profile with this id already exists)'} )
+    else: return jsonify( {'error': 'type or color is not suitable'} )
 
+# @app.route('/profile/<user_id>', methods=['GET'])
+# def get_profile(user_id):
+#     pass
 
-@app.route('/profile/<user_id>', methods=['GET'])
-def get_profile(user_id):
-    pass

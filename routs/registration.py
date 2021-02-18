@@ -3,8 +3,6 @@ from flask import request, jsonify
 from __main__ import app
 from werkzeug.security import generate_password_hash
 
-#from database.EvolutionDB import EvolDataBase
-
 from App import App
 
 @app.route('/registration', methods=['POST', 'GET'])

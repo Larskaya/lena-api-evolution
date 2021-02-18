@@ -6,9 +6,9 @@ from database.SectorsDB import SectorsDataBase
 
 class App():
 
-    def add_profile(id_, type_, color):
+    def add_profile(id_, type_, color, code):
         g.evolution_db = EvolDataBase( get_db() )
-        if g.evolution_db.addProfile(id_, type_, color):
+        if g.evolution_db.addProfile(id_, type_, color, code):
             return True
         return False
 

@@ -91,7 +91,11 @@ class SectorsDataBase:
                 return True
             return False
 
+
+
+
     def addUserCreaturesAmount(self, id_sector, id_user, amount, profile_type):
+        #if profile_type == 'хищник':
         try:
             if self.checkUserInSector(id_user, id_sector):
                 print('add creatures')
@@ -101,6 +105,12 @@ class SectorsDataBase:
             print( 'error adding '+ str(e) )
             return False
         return True
+
+
+
+
+
+
 
     def getUserAmountInNeighbors(self, id_sector, id_user):
         try:
