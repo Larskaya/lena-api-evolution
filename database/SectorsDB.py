@@ -17,19 +17,19 @@ class SectorsDataBase:
         return False
 
     def getSectors(self):
-        self.__cur.execute(f"SELECT * FROM sectors_position")
+        self.__cur.execute(f"SELECT * FROM sectors")
         res = self.__cur.fetchall()
         if res: return res
         return False
 
     def getSectorFood(self, id):
-        self.__cur.execute(f"SELECT food FROM sectors_food WHERE id='{id}'")
+        self.__cur.execute(f"SELECT food FROM sectors WHERE id='{id}'")
         res = self.__cur.fetchone()
         if res: return res
         return False
 
     def getSectorsFood(self):
-        self.__cur.execute(f"SELECT * FROM sectors_food")
+        self.__cur.execute(f"SELECT id, food FROM sectors")
         res = self.__cur.fetchall()
         if res: return res
         return False
@@ -41,7 +41,7 @@ class SectorsDataBase:
         return False
 
     def getSectorId(self, top, left):
-        self.__cur.execute(f"SELECT id FROM sectors_position WHERE position_top={top} AND position_left={left}")
+        self.__cur.execute(f"SELECT id FROM sectors WHERE position_top={top} AND position_left={left}")
         res = self.__cur.fatchone()
         if res: return res
         return False
@@ -49,10 +49,10 @@ class SectorsDataBase:
 
     def addSector(self, positionTop, positionLeft, food):
         try:
-            self.__cur.execute("INSERT INTO sectors_position (position_left, position_top) VALUES (%s, %s)", 
-            (positionLeft, positionTop)) 
+            self.__cur.execute("INSERT INTO sectors (position_left, position_top, food) VALUES (%s, %s, %s)", 
+            (positionLeft, positionTop, food)) 
             #sector_id = self.getSectorId(top, left)
-            self.__cur.execute("INSERT INTO sectors_food (food) VALUES (%s)", (food,)) 
+            #self.__cur.execute("INSERT INTO sectors (food) VALUES (%s)", (food,)) 
             self.__db.commit()
         except psycopg2.Error as e:
             print( 'error adding '+ str(e) )
@@ -75,7 +75,7 @@ class SectorsDataBase:
 
     def getAllSectorsPositions(self):
         try:
-            self.__cur.execute( f"SELECT * FROM sectors_position " )
+            self.__cur.execute( f"SELECT id, position_top, position_left FROM sectors " )
             res = self.__cur.fetchall()
             if res: return res
         except: 
@@ -124,7 +124,7 @@ class SectorsDataBase:
 
     def getNeigborId(self, left, top):  
         try:
-            self.__cur.execute( f"SELECT id FROM sectors_position WHERE position_left='{left}' AND position_top='{top}' " )
+            self.__cur.execute( f"SELECT id FROM sectors WHERE position_left='{left}' AND position_top='{top}' " )
             res = self.__cur.fetchone()
             if res: return res
         except: 

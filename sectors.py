@@ -91,9 +91,10 @@ def sector_id_check(sector_id):
     print('--- sectors data -', sectors_data)
     if sectors_data:
         for sector in sectors_data:
-            id_ = sector[2]
-            print('--- --- sector data', id_, type(id_), sector_id, type(sector_id))
+            id_ = sector[0]
+            #print('--- --- sector data', id_, type(id_), sector_id, type(sector_id))
             if id_ == int(sector_id):
+                print('sector id = =',id_)
                 return True
     return False
 
@@ -113,7 +114,7 @@ def check_of_received_data():
     if sector_id_check(sector_id): 
         # пользователя еще нет в секторах    
         if not is_user_in_any_sector(user_id): 
-            print('NEW USER')
+            #print('NEW USER')
             App.addUserCreaturesAmount( sector_id, user_id, 1, profile_type )
             return jsonify( {"success": True} )
         else:

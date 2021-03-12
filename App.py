@@ -3,9 +3,9 @@ import flask
 from flask import g
 from database.EvolutionDB import EvolDataBase
 from database.SectorsDB import SectorsDataBase
+from database.CreaturesDB import CreaturesDataBase
 
 class App():
-
     def add_profile(id_, type_, color, code):
         g.evolution_db = EvolDataBase( get_db() )
         if g.evolution_db.addProfile(id_, type_, color, code):
@@ -98,4 +98,23 @@ class App():
         g.sector_db = SectorsDataBase( get_db() )
         res = g.sector_db.getCreatures()
         if res: return res
+        else: return False
+
+    
+    def getHerbAmountInSector(sector_id):
+        g.sector_db = CreaturesDataBase( get_db() )
+        res = g.sector_db.getHerbAmountInSector(sector_id)
+        if res: return res
+        else: return False
+
+
+    def dicreaseFood(sector_id):
+        g.creatures_db = CreaturesDataBase( get_db() )
+        if g.creatures_db.dicreaseFood(sector_id): return True
+        else: return False
+
+
+    def insreaseAmount( sector_id, user_id ):
+        g.creatures_db = CreaturesDataBase( get_db() )
+        if g.creatures_db.insreaseAmount(sector_id, user_id): return True
         else: return False
