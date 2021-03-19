@@ -118,7 +118,8 @@ class SectorsDataBase:
             self.__cur.execute( f" SELECT amount FROM creatures WHERE sector_id='{id_sector}' AND user_id='{id_user}' " )
             res = self.__cur.fetchone()
             if res: return res
-        except: 
+        except psycopg2.Error as e:
+            print( 'error adding '+ str(e) ) 
             print('error reading from db')
         return []
 
@@ -136,10 +137,24 @@ class SectorsDataBase:
             self.__cur.execute( f"SELECT amount FROM creatures WHERE user_id='{id_user}' AND sector_id='{id_sector}' " )
             res = self.__cur.fetchone()
             if res: return res
-        except: 
-            print('error reading from db')
+        except psycopg2.Error as e:
+            print( 'error adding '+ str(e) ) 
+            #print('error reading from db')
         return []
 
 
 
 
+    def getSectorCreatures(self, sector_id):
+        #try:
+        self.__cur.execute( f"SELECT user_id FROM creatures WHERE sector_id='{sector_id}' " )
+        res = self.__cur.fetchall()
+        if res: return res
+
+
+
+    def getCreatureDataByUserId(self, user_id):
+        self.__cur.execute(f"SELECT amount, type FROM creatures WHERE user_id='{user_id}'")
+        res = self.__cur.fetchone()
+        if res: return res
+        return []

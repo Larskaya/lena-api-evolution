@@ -29,7 +29,10 @@ def add_profile():
     color = request.form['color']
     type_ = request.form['type']
     if profile_type(type_) and profile_color(color):
-        res = App.add_profile(user_id, type_, color, code)
+        if type_ == 'хищник':
+            res = App.add_profile(user_id, 1, color, code)
+        elif type_ == 'травоядный':
+            res = App.add_profile(user_id, 0, color, code)
         if res: return jsonify( {'success': True} )
         else: return jsonify( {'error': 'profile not added(a profile with this id already exists)'} )
     else: return jsonify( {'error': 'type or color is not suitable'} )
