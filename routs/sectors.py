@@ -7,14 +7,29 @@ def get_sectors():
     db = SectorsDataBase( get_db() )
 
     data = []
-    foods = db.getSectorsFood()
-    print('food:', foods)
-    id_and_users = db.getCreatures()
-    print('id and users:', id_and_users)
-   
-    js = json.dumps(data, sort_keys=True, indent=4)
-    return js
+    sectors_data = db.getSectors()
+    creatures = []
 
-# sectors_food [id, food]
-# creatures [sector_id, user_id, amount, type]  
+    for sector in sectors_data:
+        all_creatures = db.getSectorCreatures(sector[0])
+        if all_creatures:
+            for user_id in all_creatures:
+                if user_id:
+                    a = db.getCreatureDataByUserId(user_id[0])
+                    user_data = {'user_id': user_id[0], 'amount': a[0], 'type': a[1]}
+                    creatures.append(user_data)
+        else:
+            creatures = []
+        b = {
+            'id': sector[0], 
+            'position_top': sector[1],  
+            'position_left': sector[2], 
+            'food': sector[3],
+            'creatures': creatures
+        }
+        data.append(b)
+
+   
+    js = json.dumps(data, indent = 4)
+    return js
 
