@@ -4,14 +4,12 @@ from __main__ import app
 
 from App import App
 
-
 def profile_type(type_):
     if type_ == 'хищник':
         return 'predator'
     else:
         return 'herbivorous'
     return jsonify( {'error': "haven't type"} )
-
 
 def profile_color(color):
     if color == 'синий':
@@ -36,8 +34,3 @@ def add_profile():
         if res: return jsonify( {'success': True} )
         else: return jsonify( {'error': 'profile not added(a profile with this id already exists)'} )
     else: return jsonify( {'error': 'type or color is not suitable'} )
-
-# @app.route('/profile/<user_id>', methods=['GET'])
-# def get_profile(user_id):
-#     pass
-

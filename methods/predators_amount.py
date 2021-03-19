@@ -27,7 +27,6 @@ def getSectorsWithPredators():
     if res: return res
     return False
 
-
 def get_general_sectors():
     herbs, preds = [], []
     sectors_with_herbs = getSectorsWithHerbivorous()
@@ -38,10 +37,8 @@ def get_general_sectors():
     for el in sectors_with_preds:
         preds.append(el[0])
 
-    #print('lists -', herbs, preds)
     general = set(herbs) & set(preds)
     return general
-
 
 def dicrease_herbivorous_amount(sector_id):
     try:
@@ -61,11 +58,8 @@ def increase_predator_amount(sector_id):
         return False
     return True
 
-
-
 def creatures_amount_changes():
     general_sectors = get_general_sectors()
-    #print('GENERAL sectors:', general_sectors)
     for el in general_sectors:
         if dicrease_herbivorous_amount(el):
             increase_predator_amount(el)

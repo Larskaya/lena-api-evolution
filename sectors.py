@@ -12,10 +12,7 @@ def get_neighbor_id(left, top):
     return None
 
 def get_possible_neighbors(sector_id):
-    print('FUNCTION get possible neighbors')
-    #print('sector with his type -', sector_id, type(sector_id))
     position = App.getSectorPosition(int(sector_id))
-    print('--- position', position)
     position = position[0]
     top = position[0]
     left = position[1]
@@ -34,7 +31,6 @@ def get_possible_neighbors(sector_id):
     neighbors.append( {'top': top2, 'left': left2, 'id': get_neighbor_id(top2, left2) } )
     neighbors.append( {'top': top3, 'left': left3, 'id': get_neighbor_id(top3, left3) } )
     neighbors.append( {'top': top4, 'left': left4, 'id': get_neighbor_id(top4, left4) } )
-    print('--- get neighbors', neighbors)
 
     sectors = App.getAllSectorsPositions()
     sectors_list = []
@@ -46,53 +42,38 @@ def get_possible_neighbors(sector_id):
         if neighbor['top'] != 0 and neighbor['left'] != 0:
             if neighbor in sectors_list:
                 answer.append(neighbor)
-    print('--- possible neighbors -', answer)
     return answer
 
 
 def has_user_enough_amount_in_neighbors(sector_id, user_id):
-    print('FUNCTION has user enough...')
     sectors = App.getSectors()
     adjacents = get_possible_neighbors(sector_id)
-    print('--- adjacents', adjacents)
     for adj in adjacents:
         amount = App.getUserAmountInNeighbors(adj['id'], user_id)
-        print('--- --- amount in neighbors', amount)
-        #проверка количества сущетсв пользователя
         if amount and int(amount[0]) >= THRESHOLD_AMOUNT:
             return True
     return False
 
 
 def is_user_in_any_sector(user_id):
-    print('FUNCTION is user in any sector')
-    # поиск пользователя по секторам
     sectors_data = App.getCreatures()
     users_in_sectors = []
-    print('sectors data', sectors_data)
     if sectors_data:
         for sector in sectors_data:
-            print('--- sector', sector)
             users_in_sectors.append(sector[1]) 
         
-        print('--- users', users_in_sectors)
         users = ''
         for user in users_in_sectors:
-            print('--- --- user data', user, type(user), user_id, type(user_id))
             if user == int(user_id):
                 return True
     return False
 
 
 def sector_id_check(sector_id):
-    print('FUNCTION sector id check')
-    # проверка введенного id сектора во всех секторах
     sectors_data = App.getSectors()
-    print('--- sectors data -', sectors_data)
     if sectors_data:
         for sector in sectors_data:
             id_ = sector[0]
-            #print('--- --- sector data', id_, type(id_), sector_id, type(sector_id))
             if id_ == int(sector_id):
                 print('sector id = =',id_)
                 return True
@@ -101,26 +82,20 @@ def sector_id_check(sector_id):
 # -------------------------------------------------------------------------------------------------------------
 @app.route('/sectors/occupy', methods=['POST']) # to do PUT
 def check_of_received_data():
-    # получаем данные
     user_id = request.form['user_id']
     sector_id = request.form['sector_id']
     code = request.form['code']
     profile_type = request.form['profile_type']
-    # авторизованность
     if not App.auth(user_id, code):
         return jsonify( {"success": False, "error": "unauthorized"} )
 
-    # наличие сектора
     if sector_id_check(sector_id): 
-        # пользователя еще нет в секторах    
         if not is_user_in_any_sector(user_id): 
-            #print('NEW USER')
             App.addUserCreaturesAmount( sector_id, user_id, 1, profile_type )
             return jsonify( {"success": True} )
         else:
             return jsonify( {"success": False, "error": "user is in some sector(not neighbor)"} )
 
-        # найти соседей. добавить, если >50
         if has_user_enough_amount_in_neighbors(sector_id, user_id):
             App.addUserCreaturesAmount( sector_id, user_id, 1, profile_type )
             return jsonify( {"success": True} )
