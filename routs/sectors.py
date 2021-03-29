@@ -1,5 +1,5 @@
 from __main__ import app, get_db
-from database.SectorsDB import SectorsDataBase
+from database.Sectors import SectorsDB
 import json
 
 @app.route('/sectors', methods=['GET'])

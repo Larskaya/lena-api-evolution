@@ -6,7 +6,7 @@ from werkzeug.security import check_password_hash
 
 from App import App
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login', methods=['POST'])
 def login():
     if request.method == 'POST':
         data = App.login(request.form['login'])

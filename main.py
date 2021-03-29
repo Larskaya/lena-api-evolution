@@ -38,7 +38,7 @@ def documentation():
     return render_template( 'docs.html' )
 
 from routs import login, registration, sectors, add_sector, messages, profile
-import sectors
+import sectors_occupy
 
 if __name__ == '__main__':
     app.run(debug=True)

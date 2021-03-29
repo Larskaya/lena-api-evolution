@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash
 
 from App import App
 
-@app.route('/registration', methods=['POST', 'GET'])
+@app.route('/registration', methods=['POST'])
 def registration():
     if request.method == 'POST':
         hash_ = generate_password_hash( request.form['psw'] )

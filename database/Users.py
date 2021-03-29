@@ -1,49 +1,12 @@
 import psycopg2, random
 from datetime import datetime
 
-class EvolDataBase:
+class UsersDB:
     def __init__(self, db):
         self.__db = db
         self.__cur = db.cursor()
 
-    # def profileIdIs(self, id_):
-    #     self.__cur.execute(f"SELECT COUNT(*) FROM auth_users WHERE id={id_} ")
-    #     res = self.__cur.fetchone()
-    #     if res[0] > 0:
-    #         return True
-    #     return False
-
-    def profileAlreadyExist(self, id_):
-        self.__cur.execute(f"SELECT COUNT(*) FROM profiles WHERE user_id={id_} ")
-        res = self.__cur.fetchone()
-        #print('profile already excist:', res)
-        if res[0] > 0:
-            return False
-        return True
-
-    def checkIdAndCodeForAddProfile(self, id_, code):
-        self.__cur.execute(f"SELECT COUNT(*) FROM auth_users WHERE id={id_} AND code='{code}'")
-        res = self.__cur.fetchone()
-        #print('check id and code:', res)
-        if res[0] > 0:
-            return True
-        return False
-
-    def addProfile(self, id_, type_, color, code):
-        try:
-            if self.checkIdAndCodeForAddProfile(id_, code) and self.profileAlreadyExist(id_):
-                #print('INSERT INRO PROFILE !')
-                self.__cur.execute('INSERT INTO profiles (user_id, type, color) VALUES (%s, %s, %s)', (id_, type_, color))
-                self.__db.commit()
-            else: return False
-        except psycopg2.Error as e:
-            print('error adding', str(e))
-        return True
-
-
     def getUserId(self, login):
-        #print('login', login)
-        #login = 'admin'
         try:
             self.__cur.execute(f"SELECT id FROM users WHERE login='{login}'")
             res = self.__cur.fetchone()
@@ -83,7 +46,6 @@ class EvolDataBase:
     def updateAuthUser(self, code, id):
         try:
             self.__cur.execute(f"UPDATE auth_users SET code='{code}' WHERE id='{id}'")
-            #print('ROW COUNT', self.__cur.rowcount)
             self.__db.commit()
             if self.__cur.rowcount == 0: return False
         except psycopg2.Error as e:
@@ -107,8 +69,8 @@ class EvolDataBase:
         print('CODE:', code)
         return code
 
-    def userVerificationWhenSendingMessage(self, id, code):
-        self.__cur.execute(f"SELECT COUNT(*) FROM auth_users WHERE id='{id}' AND code='{code}'")
+    def userVerificationWhenSendingMessage(self, id_, code):
+        self.__cur.execute(f"SELECT COUNT(*) FROM auth_users WHERE id={id_} AND code='{code}'")
         res = self.__cur.fetchone()
         if res[0] > 0:
             return True
@@ -116,28 +78,9 @@ class EvolDataBase:
 
     def getUserPsw(self, id):
         try:
-            #print('ID:', id)
             self.__cur.execute(f"SELECT hpsw FROM users WHERE id={id}")
             res = self.__cur.fetchone()
             print('result:', res)
-            if res: return res
-        except:
-            print('error reading from db')
-        return []
-
-    def addMessageInDB(self, id, msg):
-        try:
-            self.__cur.execute( "INSERT INTO messages VALUES(%s, %s, %s)", (id, msg, datetime.now(), ) )
-            self.__db.commit()
-        except psycopg2.Error as e:
-            print( 'error adding '+ str(e) )
-            return False
-        return True
-
-    def getMessages(self):
-        try:
-            self.__cur.execute(f"SELECT * FROM messages")
-            res = self.__cur.fetchall()
             if res: return res
         except:
             print('error reading from db')
