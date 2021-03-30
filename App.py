@@ -35,9 +35,9 @@ class App():
             return user_id, user_hpsw, code
         return False
 
-    def add_sector(position_top, position_left, food):
+    def add_sector(position_top, position_left, food, type_):
         g.data = SectorsDB( get_db() )
-        if g.data.addSector(position_top, position_left, int(food)):
+        if g.data.addSector(position_top, position_left, int(food), type_):
             return True
         return False
 

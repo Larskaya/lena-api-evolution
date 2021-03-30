@@ -29,32 +29,21 @@ class SectorsDB:
         if res: return res
         return False
 
-   
-
     def getSectorId(self, top, left):
         self.__cur.execute(f"SELECT id FROM sectors WHERE position_top={top} AND position_left={left}")
         res = self.__cur.fatchone()
         if res: return res
         return False
 
-
-    def addSector(self, positionTop, positionLeft, food):
+    def addSector(self, positionTop, positionLeft, food, type_):
         try:
-            self.__cur.execute("INSERT INTO sectors (position_left, position_top, food) VALUES (%s, %s, %s)", 
-            (positionLeft, positionTop, food)) 
-            #sector_id = self.getSectorId(top, left)
-            #self.__cur.execute("INSERT INTO sectors (food) VALUES (%s)", (food,)) 
+            self.__cur.execute("INSERT INTO sectors (position_left, position_top, food, type) VALUES (%s, %s, %s, %s)", 
+            (positionLeft, positionTop, food, type_)) 
             self.__db.commit()
         except psycopg2.Error as e:
             print( 'error adding '+ str(e) )
             return False
         return True
-
-
-
-
-
-
 
     def getNeigborId(self, left, top):  
         try:

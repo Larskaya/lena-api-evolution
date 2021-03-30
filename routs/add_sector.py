@@ -7,7 +7,9 @@ from App import App
 @app.route('/sector/add', methods=['POST'])
 def add_sector():
     f = request.form
-    res = App.add_sector( f['position_top'], f['position_left'], f['food'] )
+    t = 0
+    if f['type'] == 'forest': t = 1
+    res = App.add_sector( f['position_top'], f['position_left'], f['food'], t )
     if res: return jsonify( {"success": True} )
     else: return jsonify( {"success": False} )
 

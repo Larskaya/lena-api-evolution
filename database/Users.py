@@ -56,7 +56,7 @@ class UsersDB:
     def addAuthUser(self, id):
         code = ''
         try:
-            lst = random.sample(range(0, 10), 10)  
+            lst = random.sample(range(0, 10), 15)  
             for n in lst:
                 code+=str(n)
             is_auth_updated = self.updateAuthUser(code, id)
