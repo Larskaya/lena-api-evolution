@@ -3,6 +3,9 @@ from database.Creatures import CreaturesDB
 from database.Sectors import SectorsDB
 import json
 
+import flask
+from flask import jsonify
+
 @app.route('/sectors', methods=['GET'])
 def get_sectors():
     db1 = CreaturesDB( get_db() )
@@ -32,7 +35,7 @@ def get_sectors():
         }
         data.append(b)
 
-    
-    js = json.dumps(data, indent = 4)
-    return js
+    return jsonify(data)
+    #js = json.dumps(data, indent = 4)
+    #return js
 

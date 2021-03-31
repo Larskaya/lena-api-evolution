@@ -29,6 +29,5 @@ def messages():
             mes = {'user_id': m[0], 'text': m[1], 'time': m[2] }
             data.append(mes)
 
-        js = json.dumps(data, indent=4)
-        return js
+        return jsonify(data)
     return jsonify( {"success": False} )
