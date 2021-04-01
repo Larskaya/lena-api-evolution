@@ -35,7 +35,7 @@ def get_sectors():
         }
         data.append(b)
 
-    return jsonify(data)
-    #js = json.dumps(data, indent = 4)
-    #return js
+    response = flask.jsonify(data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
