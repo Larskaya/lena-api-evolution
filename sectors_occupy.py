@@ -62,9 +62,8 @@ def is_user_in_any_sector(user_id):
         for sector in sectors_data:
             users_in_sectors.append(sector[1]) 
         
-        users = ''
         for user in users_in_sectors:
-            if user == int(user_id):
+            if user == user_id[0]:
                 return True
     return False
 
@@ -85,19 +84,18 @@ def check_of_received_data():
     user_id = request.form['user_id']
     sector_id = request.form['sector_id']
     code = request.form['code']
-    profile_type = request.form['profile_type']
     if not App.auth(user_id, code):
         return jsonify( {"success": False, "error": "unauthorized"} )
 
     if sector_id_check(sector_id): 
         if not is_user_in_any_sector(user_id): 
-            App.addUserCreaturesAmount( sector_id, user_id, 1, profile_type )
+            App.addUserCreaturesAmount( sector_id, user_id, 1)
             return jsonify( {"success": True} )
         else:
             return jsonify( {"success": False, "error": "user is in some sector(not neighbor)"} )
 
         if has_user_enough_amount_in_neighbors(sector_id, user_id):
-            App.addUserCreaturesAmount( sector_id, user_id, 1, profile_type )
+            App.addUserCreaturesAmount( sector_id, user_id, 1)
             return jsonify( {"success": True} )
         else:
             return jsonify( {"success": False, "error": "not enough amount in neighbors"} )

@@ -6,11 +6,25 @@ from database.Sectors import SectorsDB
 from database.Users import UsersDB
 from database.Profiles import ProfilesDB
 from database.Messages import MessagesDB 
+from database.Skills import SkillsDB
 
 class App():
-    def add_profile(id_, type_, color, code):
-        g.data = ProfilesDB( get_db() )
-        if g.data.addProfile(id_, type_, color, code):
+    def get_skills(id_):
+        g.skll = SkillsDB( get_db() )
+        res = g.skll.getSkills(id_)
+        if res: return res 
+        return False
+
+    def add_skill(id_, skill):
+        g.skll = SkillsDB( get_db() )
+        if g.skll.addSkill(id_, skill):
+            return True
+        return False
+
+    def add_profile(id_, skill, color, code):
+        g.prfl = ProfilesDB( get_db() )
+        g.skll = SkillsDB( get_db() )
+        if g.prfl.addProfile(id_, color, code) and g.skll.addFirstSkill(id_, skill):
             return True
         return False
 
@@ -58,10 +72,16 @@ class App():
         id_sector = g.data.getNeigborId(left, top)
         if id_sector: return id_sector
         else: return False
+    
+    def getAllSectorsPositions():
+        g.data = SectorsDB( get_db() )
+        positions = g.data.getAllSectorsPositions()
+        if positions: return positions
+        else: return False
 
-    def addUserCreaturesAmount(id_sector, id_user, amount, profile_type):
+    def addUserCreaturesAmount(id_sector, id_user, amount):
         g.data = CreaturesDB( get_db() )
-        if g.data.addUserCreaturesAmount(id_sector, id_user, amount, profile_type): return True
+        if g.data.addUserCreaturesAmount(id_sector, id_user, amount): return True
         else: return False
 
     def getUserCreaturesAmount(self, id_user, id_sector):
@@ -82,5 +102,3 @@ class App():
         res = g.data.getCreatures()
         if res: return res
         else: return False
-
-    

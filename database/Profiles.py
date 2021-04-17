@@ -22,11 +22,11 @@ class ProfilesDB:
         return False
 
 
-    def addProfile(self, id_, type_, color, code):
+    def addProfile(self, id_, color, code):
         try:
             if self.checkIdAndCodeForAddProfile(id_, code) and self.profileAlreadyExist(id_):
                 #print('INSERT INRO PROFILE !')
-                self.__cur.execute('INSERT INTO profiles (user_id, type, color) VALUES (%s, %s, %s)', (id_, type_, color))
+                self.__cur.execute('INSERT INTO profiles (user_id, color) VALUES (%s, %s)', (id_, color))
                 self.__db.commit()
             else: return False
         except psycopg2.Error as e:

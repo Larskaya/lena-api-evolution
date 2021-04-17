@@ -61,11 +61,11 @@ class CreaturesDB:
             return True
         return False
 
-    def addUserCreaturesAmount(self, id_sector, id_user, amount, profile_type):
+    def addUserCreaturesAmount(self, id_sector, id_user, amount):
         try:
             if self.checkUserInSector(id_user, id_sector):
                 print('add creatures')
-                self.__cur.execute( f"INSERT INTO creatures VALUES(%s, %s, %s, %s)", (id_sector, id_user, amount, profile_type, ) )
+                self.__cur.execute( f"INSERT INTO creatures VALUES(%s, %s, %s)", (id_sector, id_user, amount, ) )
                 self.__db.commit()
         except psycopg2.Error as e:
             print( 'error adding '+ str(e) )

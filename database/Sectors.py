@@ -53,3 +53,12 @@ class SectorsDB:
         except: 
             print('error reading from db')
         return []
+
+    def getAllSectorsPositions(self):
+        try:
+            self.__cur.execute( f"SELECT position_top, position_left FROM sectors" )
+            res = self.__cur.fetchall()
+            if res: return res
+        except: 
+            print('error reading from db')
+        return []

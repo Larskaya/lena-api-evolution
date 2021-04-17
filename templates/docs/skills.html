@@ -1,0 +1,34 @@
+<h2> /add_skill </h2>
+<table cellpadding=40>
+    <tr>
+        <td>
+            <h3>post</h3>
+            <h4>request</h4>
+                <ul>
+                    <li>
+                        head: -
+                    </li>
+                    <li>
+                        body: user_id, skill
+                    </li>
+                    <li>
+                        url params: -
+                    </li>
+                </ul>
+        
+            <h4>response</h4>
+            <p> json: {'success':True }  </p>
+            <td>
+
+                <form action='/add_skill' method='post' >
+                    <p> <label> user id: </label> <input type='text' name='user_id' value='' required/> </p>
+                    <p> <laabel> skill (двигаться - 0, поедать растения - 1, поедать существ - 2): </label> <input type='text' name='skill' value='' required></p>
+                    <p> <input type='submit' value='создать' /></p>
+                </form>
+        
+            </td>
+            
+        </td>
+    </tr>
+</table>
+
