@@ -34,11 +34,20 @@ def get_herb(cursor, creature):
     return False
 
 
+def is_there_enough_amount( cursor, num, herb_id, sector_id ):
+    cursor.execute(f"SELECT amount FROM creatures WHERE user_id={herb_id} AND sector_id={sector_id}")
+    amount = cursor.fetchone()
+    if amount: 
+        if amount[0] - num >= 0: return True
+    return False
+
+
 def decrease_herb(db, cursor, herb_id, sector_id, infl_a):
     try:
         a = 1 + infl_a
-        cursor.execute("UPDATE creatures SET amount = amount - (%s) WHERE user_id = (%s) AND sector_id = (%s)", (a, herb_id, sector_id, ))
-        db.commit()
+        if is_there_enough_amount( cursor, a, herb_id, sector_id ):
+            cursor.execute("UPDATE creatures SET amount = amount - (%s) WHERE user_id = (%s) AND sector_id = (%s)", (a, herb_id, sector_id, ))
+            db.commit()
     except psycopg2.Error as e:
         print('error', str(e))
         return False
