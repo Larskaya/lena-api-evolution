@@ -33,7 +33,7 @@ def add_profile():
     skill = request.form['skill']
     
     if len(skill) > 1 or int(skill) > 5:
-        return jsonify( {'error': '...in skill'} )
+        return jsonify( {'error': 'skill can be a number from 1 to 5 '} )
 
     skills = replace_skills(skill)
     

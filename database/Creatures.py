@@ -26,7 +26,7 @@ class CreaturesDB:
         if res: return res
 
     def getCreatureDataByUserId(self, user_id):
-        self.__cur.execute(f"SELECT amount, type FROM creatures WHERE user_id='{user_id}'")
+        self.__cur.execute(f"SELECT amount FROM creatures WHERE user_id='{user_id}'")
         res = self.__cur.fetchone()
         if res: return res
         return []

@@ -21,7 +21,7 @@ def get_sectors():
             for user_id in all_creatures:
                 if user_id:
                     a = db1.getCreatureDataByUserId(user_id[0])
-                    user_data = {'user_id': user_id[0], 'amount': a[0], 'type': a[1]}
+                    user_data = {'user_id': user_id[0], 'amount': a[0]}
                     creatures.append(user_data)
         else:
             creatures = []

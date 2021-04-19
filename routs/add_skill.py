@@ -21,6 +21,9 @@ def add_skill():
     user_id = request.form['user_id']
     skill = request.form['skill']
 
+    if len(skill) > 1 or int(skill) > 5:
+        return jsonify( {'error': 'skill can be a number from 1 to 5 '} )
+
     old_skills = App.get_skills(user_id)[0]
     skills = replace_skills(skill, old_skills)
 
