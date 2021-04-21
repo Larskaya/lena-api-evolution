@@ -5,6 +5,17 @@ from flask import request, jsonify
 
 from database.Messages import MessagesDB
 
+
+
+
+def check_cookies(code, user_id):
+    if request.cookies.get('user_id') and request.cookies.get('code'):
+        print('request: cookies and codes is got!')
+        return True
+    return False
+
+
+
 @app.route('/messages', methods=['POST', 'GET'])
 def messages():
     dbase = EvolDataBase( get_db() )
@@ -13,6 +24,11 @@ def messages():
         user_id = request.form['user_id']
         message = request.form['message']
         print('form data massage:', request.form)
+
+        if not check_cookies(code, user_id):
+            return jsonify( {'error': 'in cookies'} )
+
+
         if not dbase.isAuthValid(user_id, code):
             return jsonify( {"success": False, "error": "not authorized"} )
         if dbase.userVerificationWhenSendingMessage(user_id, code):

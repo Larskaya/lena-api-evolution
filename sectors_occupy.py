@@ -78,12 +78,28 @@ def sector_id_check(sector_id):
                 return True
     return False
 
+
+
+
+def check_cookies(code, user_id):
+    if request.cookies.get('user_id') and request.cookies.get('code'):
+        print('request: cookies and codes is got!')
+        return True
+    return False
+
+
+
 # -------------------------------------------------------------------------------------------------------------
 @app.route('/sectors/occupy', methods=['POST']) # to do PUT
 def check_of_received_data():
-    user_id = request.form['user_id']
+    user_id = request.form['user_id'] 
     sector_id = request.form['sector_id']
-    code = request.form['code']
+    code = request.form['code'] 
+
+    if not check_cookies(code, user_id):
+        return jsonify( {'error': 'in cookies'} )
+
+
     if not App.auth(user_id, code):
         return jsonify( {"success": False, "error": "unauthorized"} )
 
