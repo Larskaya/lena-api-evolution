@@ -15,11 +15,21 @@ def replace_skills(skill, skills):
         answer += str(el)
     return answer
 
+    
+def check_cookies():
+    if request.cookies.get('user_id') and request.cookies.get('code'):
+        print('request: cookies and codes is got!')
+        return True
+    return False
+
 
 @app.route('/add_skill', methods=['POST'])
 def add_skill():
     user_id = request.form['user_id']
     skill = request.form['skill']
+
+    if not check_cookies():
+        return jsonify( {'success': False} )
 
     if len(skill) > 1 or int(skill) > 5:
         return jsonify( {'error': 'skill can be a number from 1 to 5 '} )

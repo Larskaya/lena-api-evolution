@@ -27,16 +27,15 @@ def replace_skills(skill):
 
 
 
-
-def check_cookies(code, user_id):
+def check_cookies():
     if request.cookies.get('user_id') and request.cookies.get('code'):
         print('request: cookies and codes is got!')
         return True
     return False
 
+
 @app.route('/profile', methods=['POST'])
 def add_profile():
-    code = request.form['code']
     user_id = request.form['user_id']
     color = request.form['color']
     skill = request.form['skill']
@@ -44,11 +43,11 @@ def add_profile():
     if len(skill) > 1 or int(skill) > 5:
         return jsonify( {'error': 'skill can be a number from 1 to 5 '} )
 
-    if not check_cookies(code, user_id):
+    if not check_cookies():
         return jsonify( {'error': 'in cookies'} )
 
     skills = replace_skills(skill)
     
-    res = App.add_profile(user_id, skills, color, code)
+    res = App.add_profile(user_id, skills, color)
     if res: return jsonify( {'success': True} )
     else: return jsonify( {'error': 'profile not added(a profile with this id already exists)'} )

@@ -8,7 +8,7 @@ from database.Messages import MessagesDB
 
 
 
-def check_cookies(code, user_id):
+def check_cookies():
     if request.cookies.get('user_id') and request.cookies.get('code'):
         print('request: cookies and codes is got!')
         return True
@@ -18,25 +18,25 @@ def check_cookies(code, user_id):
 
 @app.route('/messages', methods=['POST', 'GET'])
 def messages():
-    dbase = EvolDataBase( get_db() )
+    dbase = MessagesDB( get_db() )
     if request.method == 'POST':
-        code = request.form['code']
         user_id = request.form['user_id']
         message = request.form['message']
-        print('form data massage:', request.form)
+        #print('form data massage:', request.form)
 
-        if not check_cookies(code, user_id):
+        if not check_cookies():
             return jsonify( {'error': 'in cookies'} )
 
 
-        if not dbase.isAuthValid(user_id, code):
-            return jsonify( {"success": False, "error": "not authorized"} )
-        if dbase.userVerificationWhenSendingMessage(user_id, code):
-            if dbase.addMessageInDB( user_id, message ):
-                return jsonify( {"success": True} )
-            else:
-                return jsonify( {"success": False, "error": "some kind error (added failed)"} )
-        return jsonify( {"success": False, "error": "some kind error (verification failed)"} )
+            # if not dbase.isAuthValid(user_id, code):
+            #     return jsonify( {"success": False, "error": "not authorized"} )
+            #if dbase.userVerificationWhenSendingMessage(user_id, code):
+
+        if dbase.addMessageInDB( user_id, message ):
+            return jsonify( {"success": True} )
+        else:
+            return jsonify( {"success": False, "error": "added failed"} )
+        return jsonify( {"success": False, "error": "verification failed"} )
 
     elif request.method == 'GET':
         data = []

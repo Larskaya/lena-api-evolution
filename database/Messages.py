@@ -1,4 +1,5 @@
 import psycopg2
+from datetime import datetime
 
 class MessagesDB:
     def __init__(self, db):

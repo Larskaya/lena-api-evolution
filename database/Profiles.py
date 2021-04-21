@@ -14,21 +14,18 @@ class ProfilesDB:
             return False
         return True
 
-    def checkIdAndCodeForAddProfile(self, id_, code):
-        self.__cur.execute(f"SELECT COUNT(*) FROM auth_users WHERE id={id_} AND code='{code}'")
-        res = self.__cur.fetchone()
-        if res[0] > 0:
-            return True
-        return False
+    # def checkIdAndCodeForAddProfile(self, id_, code):
+    #     self.__cur.execute(f"SELECT COUNT(*) FROM auth_users WHERE id={id_} AND code='{code}'")
+    #     res = self.__cur.fetchone()
+    #     if res[0] > 0:
+    #         return True
+    #     return False
 
 
-    def addProfile(self, id_, color, code):
+    def addProfile(self, id_, color):
         try:
-            if self.checkIdAndCodeForAddProfile(id_, code) and self.profileAlreadyExist(id_):
-                #print('INSERT INRO PROFILE !')
-                self.__cur.execute('INSERT INTO profiles (user_id, color) VALUES (%s, %s)', (id_, color))
-                self.__db.commit()
-            else: return False
+            self.__cur.execute('INSERT INTO profiles (user_id, color) VALUES (%s, %s)', (id_, color))
+            self.__db.commit()
         except psycopg2.Error as e:
             print('error adding', str(e))
         return True

@@ -21,10 +21,10 @@ class App():
             return True
         return False
 
-    def add_profile(id_, skill, color, code):
+    def add_profile(id_, skill, color):
         g.prfl = ProfilesDB( get_db() )
         g.skll = SkillsDB( get_db() )
-        if g.prfl.addProfile(id_, color, code) and g.skll.addFirstSkill(id_, skill):
+        if g.prfl.addProfile(id_, color) and g.skll.addFirstSkill(id_, skill):
             return True
         return False
 

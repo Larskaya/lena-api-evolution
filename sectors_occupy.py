@@ -81,7 +81,7 @@ def sector_id_check(sector_id):
 
 
 
-def check_cookies(code, user_id):
+def check_cookies():
     if request.cookies.get('user_id') and request.cookies.get('code'):
         print('request: cookies and codes is got!')
         return True
@@ -94,14 +94,15 @@ def check_cookies(code, user_id):
 def check_of_received_data():
     user_id = request.form['user_id'] 
     sector_id = request.form['sector_id']
-    code = request.form['code'] 
 
-    if not check_cookies(code, user_id):
+    #code = request.form['code'] 
+
+    if not check_cookies():
         return jsonify( {'error': 'in cookies'} )
 
 
-    if not App.auth(user_id, code):
-        return jsonify( {"success": False, "error": "unauthorized"} )
+    # if not App.auth(user_id, code):
+    #     return jsonify( {"success": False, "error": "unauthorized"} )
 
     if sector_id_check(sector_id): 
         if not is_user_in_any_sector(user_id): 
