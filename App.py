@@ -102,3 +102,9 @@ class App():
         res = g.data.getCreatures()
         if res: return res
         else: return False
+
+    def deleteUser(user_id):
+        g.data = UsersDB( get_db() )
+        delete = g.data.deleteUser(user_id)
+        if delete: return delete
+        else: return False

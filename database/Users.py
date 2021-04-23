@@ -93,4 +93,13 @@ class UsersDB:
         if res[0] > 0:
             return True
         return False
-    
+
+    def deleteUser(self, user_id):
+        try:
+            self.__cur.execute(f"DELETE FROM auth_users WHERE id=(%s)", (user_id, ))
+            self.__db.commit()
+            if self.__cur.rowcount == 0: return False
+        except psycopg2.Error as e:
+            print( 'error adding '+ str(e) )
+            return False
+        return True
