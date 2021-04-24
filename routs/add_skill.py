@@ -23,9 +23,10 @@ def check_cookies():
     return False
 
 
-@app.route('/add_skill', methods=['POST'])
+@app.route('/user/add_skill', methods=['POST'])
 def add_skill():
-    user_id = request.form['user_id']
+    #user_id = request.form['user_id']
+    user_id = request.cookies.get('user_id')
     skill = request.form['skill']
 
     if not check_cookies():

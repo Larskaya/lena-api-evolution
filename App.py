@@ -108,3 +108,9 @@ class App():
         delete = g.data.deleteUser(user_id)
         if delete: return delete
         else: return False
+
+    def getUsers():
+        g.data = UsersDB( get_db() )
+        users = g.data.getUsers()
+        if users: return users
+        return False

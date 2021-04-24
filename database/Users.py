@@ -87,12 +87,12 @@ class UsersDB:
             print('error reading from db')
         return []
 
-    def isAuthValid(self, id_, code):
-        self.__cur.execute("SELECT COUNT(*) FROM auth_users WHERE id=(%s) AND code=(%s)", (id_, code))
-        res = self.__cur.fetchone()
-        if res[0] > 0:
-            return True
-        return False
+    # def isAuthValid(self, id_, code):
+    #     self.__cur.execute(f"SELECT COUNT(*) FROM auth_users WHERE id=(%s) AND code=(%s)", (id_, code,))
+    #     res = self.__cur.fetchone()
+    #     if res[0] > 0:
+    #         return True
+    #     return False
 
     def deleteUser(self, user_id):
         try:
@@ -103,3 +103,12 @@ class UsersDB:
             print( 'error adding '+ str(e) )
             return False
         return True
+
+    def getUsers(self):
+        try:
+            self.__cur.execute(f"SELECT * FROM users")
+            res = self.__cur.fetchall()
+            if res: return res
+        except:
+            print('error reading from db')
+        return []

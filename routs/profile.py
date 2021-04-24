@@ -34,9 +34,9 @@ def check_cookies():
     return False
 
 
-@app.route('/profile', methods=['POST'])
+@app.route('/user/profile', methods=['POST'])
 def add_profile():
-    user_id = request.form['user_id']
+    user_id = request.cookies.get('user_id')
     color = request.form['color']
     skill = request.form['skill']
     

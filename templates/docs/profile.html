@@ -1,4 +1,4 @@
-<h2> /profile </h2>
+
 <table cellpadding=40>
     <tr>
         <td>
@@ -19,14 +19,14 @@
             <h4>response</h4>
             <p> json: {'success':True }  </p>
         <td>
-            <p> Профиль </p>
-            <form action='/profile' method='post' >
-                <p> <label> user id: </label> <input type='text' name='user_id' value='' required/> </p>
+            <p><h2> /profile </h3></p>
+            <form action='/user/profile' method='post' >
                 <p> <label> color (красный, синий или зеленый): </label> <input type='text' name='color' value='' required/> </p>
                 <p> <laabel> skill (двигаться - 0, поедать растения - 1, поедать существ - 2): </label> <input type='text' name='skill' value='' required></p>
                 <p> <input type='submit' value='создать' /></p>
             </form>
         </td>
+        
 
         </td>
     </tr>
