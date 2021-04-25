@@ -90,12 +90,10 @@ def check_cookies():
 
 
 # -------------------------------------------------------------------------------------------------------------
-@app.route('/sectors/occupy', methods=['POST']) # to do PUT
+@app.route('/user/occupy', methods=['POST']) # to do PUT
 def check_of_received_data():
-    user_id = request.form['user_id'] 
+    user_id = request.cookies.get('user_id')
     sector_id = request.form['sector_id']
-
-    #code = request.form['code'] 
 
     if not check_cookies():
         return jsonify( {'error': 'in cookies'} )

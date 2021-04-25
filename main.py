@@ -37,7 +37,7 @@ def get_db():
 def documentation():
     return render_template( 'docs.html' )
 
-from routs import login, registration, sectors, add_sector, messages, profile, add_skill
+from routs import login, sectors, add_sector, messages, profile, add_skill, user
 import sectors_occupy
 
 if __name__ == '__main__':

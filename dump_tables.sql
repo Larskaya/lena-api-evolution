@@ -44,7 +44,6 @@ CREATE TABLE public.creatures (
     sector_id integer NOT NULL,
     user_id integer NOT NULL,
     amount integer NOT NULL,
-    type text NOT NULL
 );
 
 
@@ -71,7 +70,6 @@ ALTER TABLE public.message OWNER TO postgres;
 
 CREATE TABLE public.profiles (
     user_id integer NOT NULL,
-    type text NOT NULL,
     color text NOT NULL
 );
 
