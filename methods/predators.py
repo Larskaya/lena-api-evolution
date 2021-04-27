@@ -30,15 +30,26 @@ def get_creatures_in_sector( cursor, sector_id ):
 def get_herb(cursor, creature):
     skills = get_skills(cursor, creature)
     indexes = get_skills_indexes(skills)
-    if 1 in indexes: return True
+    if 0 in indexes or 1 in indexes: return True
+    elif 0 in indexes and 1 in indexes: return True
     return False
+
+
+def deleteCreatures(cursor, user_id, sector_id):
+    try:
+        cursor.execute(f"DELETE FROM creatures WHERE user_id={user_id} AND sector_id={sector_id}")
+    except psycopg2.Error as e:
+        print('Error', str(e))
+        return False
+    return True
 
 
 def is_there_enough_amount( cursor, num, herb_id, sector_id ):
     cursor.execute(f"SELECT amount FROM creatures WHERE user_id={herb_id} AND sector_id={sector_id}")
     amount = cursor.fetchone()
     if amount: 
-        if amount[0] - num >= 0: return True
+        if amount[0] - num > 0: return True
+        elif amount[0] - num == 0: return deleteCreatures(cursor, herb_id, sector_id)
     return False
 
 
