@@ -16,6 +16,7 @@ def get_sectors():
     db2 = SectorsDB( get_db() )
     db3 = SkillsDB( get_db() )
 
+    user_data = {}
     data = []
     sectors_data = db2.getSectors()
     creatures = []
@@ -27,7 +28,7 @@ def get_sectors():
                 if user_id:
                     a = db1.getCreatureDataByUserId(user_id[0])
                     skills = db3.getSkills(user_id[0])
-                    user_data = {'user_id': user_id[0], 'amount': a[0], 'skills': skills[0]}
+                    if skills: user_data = {'user_id': user_id[0], 'amount': a[0], 'skills': skills[0]}
                     creatures.append(user_data)
 
         else:

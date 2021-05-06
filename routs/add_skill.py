@@ -25,14 +25,13 @@ def check_cookies():
 
 @app.route('/user/add_skill', methods=['POST'])
 def add_skill():
-    #user_id = request.form['user_id']
     user_id = request.cookies.get('user_id')
     skill = request.form['skill']
 
     if not check_cookies():
         return jsonify( {'success': False} )
 
-    if len(skill) > 1 or int(skill) > 5:
+    if len(skill) > 1 or int(skill) > 5:  
         return jsonify( {'error': 'skill can be a number from 1 to 5 '} )
 
     old_skills = App.get_skills(user_id)[0]

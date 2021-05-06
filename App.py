@@ -9,22 +9,29 @@ from database.Messages import MessagesDB
 from database.Skills import SkillsDB
 
 class App():
+    # def add_abilities(user_id, ab):
+    #     g.skll = SkillsDB( get_db() )
+    #     if g.skll.addAbilities(user_id, ab):
+    #         return True
+    #     return False
+
+
     def get_skills(id_):
         g.skll = SkillsDB( get_db() )
         res = g.skll.getSkills(id_)
         if res: return res 
         return False
 
-    def add_skill(id_, skill):
+    def add_skill(id_, skill, ab):
         g.skll = SkillsDB( get_db() )
-        if g.skll.addSkill(id_, skill):
+        if g.skll.addSkill(id_, skill, ab):
             return True
         return False
 
-    def add_profile(id_, skill, color):
+    def add_profile(id_, skill, color, ab):
         g.prfl = ProfilesDB( get_db() )
         g.skll = SkillsDB( get_db() )
-        if g.prfl.addProfile(id_, color) and g.skll.addFirstSkill(id_, skill):
+        if g.prfl.addProfile(id_, color) and g.skll.addFirstSkill(id_, skill, ab):
             return True
         return False
 

@@ -2,6 +2,7 @@ import time, psycopg2
 import flask
 from herbivorous import herbivorous_skill
 from predators import predators_skill
+from fight import fighting
 
 
 sector_types = {'water': 0, 'forest': 1}
@@ -11,7 +12,7 @@ def connect_db():
     conn = psycopg2.connect(
         database="evolution", 
         user="postgres", 
-        
+
         host="localhost", 
         port="5432"
     )
@@ -111,4 +112,6 @@ def main():
         
 while True:
     main()
-    time.sleep(15)
+    fighting(cursor, db)
+
+    time.sleep(10)
