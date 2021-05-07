@@ -6,7 +6,7 @@ def connect_db():
     conn = psycopg2.connect(
         database="evolution", 
         user="postgres", 
-        
+        password='user', 
         host="localhost", 
         port="5432"
     )
@@ -14,84 +14,6 @@ def connect_db():
 
 db = connect_db()
 cursor = db.cursor()
-
-
-def get_fight(cursor, id_):
-    cursor.execute(f"SELECT fight FROM skills WHERE user_id = {id_}")
-    res = cursor.fetchone()
-    if res: return res
-    return False
-
-def increase_amount(cursor, db, value, user_id, sector_id):
-    print('user id and value +', user_id, value)
-    try:
-        cursor.execute(f"UPDATE creatures SET amount = amount + {value} WHERE user_id = {user_id} AND sector_id = {sector_id}")
-        db.commit()
-        if cursor.rowcount == 0:
-            print('value has not been update')
-            return False
-    except psycopg2.Error as e:
-        print( 'error adding '+ str(e) )
-        return False
-    return True
-
-def get_amount(cursor, user_id, sector_id):
-    cursor.execute(f"SELECT amount FROM creatures WHERE user_id = {user_id} AND sector_id = {sector_id}")
-    res = cursor.fetchone()
-    if res: return res
-    return False
-
-def delete_creatures(cursor, user_id, sector_id):
-    try:
-        cursor.execute(f"DELETE FROM creatures WHERE user_id = {user_id} AND sector_id = {sector_id}")
-        db.commit()
-        if cursor.rowcount == 0:
-            #print('value has not been update')
-            return False
-    except psycopg2.Error as e:
-        print( 'error adding '+ str(e) )
-        return False
-    return True
-
-
-def creatures_died(cursor, user_id, sector_id):
-    amount = get_amount(cursor, user_id, sector_id)[0]
-    if amount < 1: delete_creatures(cursor, user_id, sector_id)
-
-
-def dicrease_amount(cursor, db, value, user_id, sector_id):
-    print('user id and value -', user_id, value)
-    try:
-        cursor.execute(f"UPDATE creatures SET amount = amount - {value} WHERE user_id = {user_id} AND sector_id = {sector_id}")
-        db.commit()
-        if cursor.rowcount == 0: 
-            print('value has not been update')
-            return False
-    except psycopg2.Error as e:
-        print( 'error adding '+ str(e) )
-        return False
-    return True
-
-
-def get_winner(cursor, pare, sector_id):
-    a = pare.split()[0]
-    b = pare.split()[1]
-    print('ids:', a, 'and', b)
-    fight_a = get_fight(cursor, a)[0]
-    fight_b = get_fight(cursor, b)[0]
-    print('fight value -', fight_a, 'and', b)
-    if fight_a > fight_b:
-        value = fight_a - fight_b
-        if increase_amount(cursor, db, value, a, sector_id): 
-            if dicrease_amount(cursor, db, value, b, sector_id):
-                creatures_died(cursor, b, sector_id)
-    elif fight_b > fight_a:
-        value = fight_b - fight_a
-        if increase_amount(cursor, db, value, b, sector_id): 
-            if dicrease_amount(cursor, db, value, a, sector_id):
-                creatures_died(cursor, a, sector_id)
-                
-
 
 
 def make_pares(users_id):
@@ -111,11 +33,6 @@ def make_pares(users_id):
         count += 1
     return pares
 
-def get_sectors_id_in_creatures():
-    cursor.execute(f"SELECT sector_id FROM creatures")
-    res = cursor.fetchall()
-    if res: return res
-    return False
 
 def start_transaction(cursor):
     cursor.execute('BEGIN')
@@ -124,13 +41,24 @@ def finish_transaction(cursor, db):
     cursor.execute('COMMIT')
     db.commit
 
-def get_need_sectors(sectors_id, counter):
+def get_sectors_in_crtrs_tbl():
+    cursor.execute(f"SELECT sector_id FROM creatures")
+    res = cursor.fetchall()
+    if res: return res
+    return False
+
+def get_sectors_where_many_crtrs(sectors_id, counter):
     res = []
     for sector in set(sectors_id):
         if counter[sector] > 1:
             res.append(sector)
     return res
 
+def get_sector_ids(sectors_with_crtrs):
+    sector_ids = []
+    for sector in sectors_with_crtrs:
+        sector_ids.append(int(sector[0]))
+    return sector_ids
 
 def get_users(sector_id):
     cursor.execute(f"SELECT user_id FROM creatures WHERE sector_id = {sector_id}")
@@ -139,39 +67,110 @@ def get_users(sector_id):
     return False
 
 
+def is_predator_in_pare(cursor, crtr):
+    cursor.execute(f"SELECT skills FROM skills WHERE user_id = {crtr}")
+    res = cursor.fetchone()[0]
+    if res: 
+        if res[2] == '1': return True
+    return False
 
-def main(cursor, pares, sectors_id):
-        count = 0
-        #for pare in pares:
-        while count < len(pares):
-            start_transaction(cursor)
-            print('sectors - ', sectors_id)
-            print('count, pares, sector_id -', count, pares[count], sectors_id[count])
-            get_winner(cursor, pares[count], sectors_id[count])
-            time.sleep(5)
-            finish_transaction(cursor, db)
-            count += 1
+
+def delete_creatures(cursor, user_id, sector_id):
+    try:
+        cursor.execute(f"DELETE FROM creatures WHERE user_id = {user_id} AND sector_id = {sector_id}")
+        db.commit()
+        if cursor.rowcount == 0:
+            return False
+    except psycopg2.Error as e:
+        print( 'error adding '+ str(e) )
+        return False
+    return True
+
+def get_amount(cursor, user_id, sector_id):
+    cursor.execute(f"SELECT amount FROM creatures WHERE user_id = {user_id} AND sector_id = {sector_id}")
+    res = cursor.fetchone()
+    if res: return res
+    return False
+
+def creatures_died(cursor, user_id, sector_id):
+    amount = get_amount(cursor, user_id, sector_id)[0]
+    if amount < 1: delete_creatures(cursor, user_id, sector_id)
+
+
+
+def increase_amount(db, cursor, sector_id, user_id, fertile):
+    try:
+        cursor.execute(f"UPDATE creatures SET amount = amount + {fertile} WHERE sector_id = {sector_id} AND user_id = {user_id}")
+        db.commit()
+        if cursor.rowcount == 0: 
+            return False
+    except psycopg2.Error as e:
+        print( 'error adding '+ str(e) )
+        return False
+    return True
+
+
+def dicrease_amount(db, cursor, sector_id, user_id, eat):
+    try:
+        cursor.execute(f"UPDATE creatures SET amount = amount - {eat} WHERE sector_id = {sector_id} AND user_id = {user_id}")
+        db.commit()
+        if cursor.rowcount == 0: 
+            return False
+    except psycopg2.Error as e:
+        print( 'error adding '+ str(e) )
+        return False
+    return True
+
+
+def get_fertile(crtr):
+    cursor.execute(f"SELECT fertile FROM skills WHERE user_id = {crtr}")
+    res = cursor.fetchone()
+    if res: return res[0]
+    return False
+
+def get_eat(crtr):
+    cursor.execute(f"SELECT eat FROM skills WHERE user_id = {crtr}")
+    res = cursor.fetchone()
+    if res: return res[0]
+    return False
 
 
 def fighting(cursor, db):
-    pares = []
-    sectors_id = []
-    data = get_sectors_id_in_creatures()
-    if data:
-        print('data', data)
-        for sector in data:
-            sectors_id.append(int(sector[0]))
+    sectors_with_crtrs = get_sectors_in_crtrs_tbl() # сектора, где есть существа
+    if sectors_with_crtrs: 
+        sector_ids = get_sector_ids(sectors_with_crtrs)
+        sectors_where_many_crtrs = get_sectors_where_many_crtrs(sector_ids, Counter(sector_ids))
 
-        counter = Counter(sectors_id)
+        # создадим словарь сектор и его существа
+        sctrs_with_crtrs = {}
+
+        # получаем id юзеров в нужных секторах
         users_id = []
-        need_sectors = get_need_sectors(sectors_id, counter)
-        for sector in need_sectors:
+        for sector in sectors_where_many_crtrs:
             users_id.append(get_users(sector))
-        for el in users_id:
-            pares = make_pares(el)
-        print('pares:', pares)
+            # составляем пары существ для драки
+            for el in users_id:
+                pares = make_pares(el)
 
-        try:
-            main(cursor, pares, sectors_id)
-        except:
-            return False
+            for pare in pares:
+                a = pare.split()[0]
+                b = pare.split()[1]
+                # есть ли в паре существ хищник (второй скилл)
+                if is_predator_in_pare(cursor, a):
+                    fertile = get_fertile(a)
+                    eat = get_eat(a)
+                    if increase_amount(db, cursor, sector, a, fertile):
+                        if dicrease_amount(db, cursor, sector, b, eat):
+                            creatures_died(cursor, b, sector)
+                
+                elif is_predator_in_pare(cursor, b): 
+                    fertile = get_fertile(b)
+                    eat = get_eat(b)
+                    if increase_amount(db, cursor, sector, b, fertile):
+                        if dicrease_amount(db, cursor, sector, a, eat):
+                            creatures_died(cursor, b, sector)
+
+    
+
+
+ 
