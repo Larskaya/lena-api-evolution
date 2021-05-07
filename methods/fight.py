@@ -2,20 +2,6 @@
 from collections import Counter
 import psycopg2, random, time
 
-def connect_db():
-    conn = psycopg2.connect(
-        database="evolution", 
-        user="postgres", 
-        password='user', 
-        host="localhost", 
-        port="5432"
-    )
-    return conn    
-
-db = connect_db()
-cursor = db.cursor()
-
-
 def make_pares(users_id):
     lst = []
     for el in users_id:
