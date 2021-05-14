@@ -27,7 +27,7 @@ def finish_transaction(cursor, db):
     cursor.execute('COMMIT')
     db.commit
 
-def get_sectors_in_crtrs_tbl():
+def get_sectors_in_crtrs_tbl(cursor):
     cursor.execute(f"SELECT sector_id FROM creatures")
     res = cursor.fetchall()
     if res: return res
@@ -46,7 +46,7 @@ def get_sector_ids(sectors_with_crtrs):
         sector_ids.append(int(sector[0]))
     return sector_ids
 
-def get_users(sector_id):
+def get_users(cursor, sector_id):
     cursor.execute(f"SELECT user_id FROM creatures WHERE sector_id = {sector_id}")
     res = cursor.fetchall()
     if res: return res
@@ -61,7 +61,7 @@ def is_predator_in_pare(cursor, crtr):
     return False
 
 
-def delete_creatures(cursor, user_id, sector_id):
+def delete_creatures(db, cursor, user_id, sector_id):
     try:
         cursor.execute(f"DELETE FROM creatures WHERE user_id = {user_id} AND sector_id = {sector_id}")
         db.commit()
@@ -108,13 +108,13 @@ def dicrease_amount(db, cursor, sector_id, user_id, eat):
     return True
 
 
-def get_fertile(crtr):
+def get_fertile(cursor, crtr):
     cursor.execute(f"SELECT fertile FROM skills WHERE user_id = {crtr}")
     res = cursor.fetchone()
     if res: return res[0]
     return False
 
-def get_eat(crtr):
+def get_eat(cursor, crtr):
     cursor.execute(f"SELECT eat FROM skills WHERE user_id = {crtr}")
     res = cursor.fetchone()
     if res: return res[0]
@@ -122,7 +122,7 @@ def get_eat(crtr):
 
 
 def fighting(cursor, db):
-    sectors_with_crtrs = get_sectors_in_crtrs_tbl() # сектора, где есть существа
+    sectors_with_crtrs = get_sectors_in_crtrs_tbl(cursor) # сектора, где есть существа
     if sectors_with_crtrs: 
         sector_ids = get_sector_ids(sectors_with_crtrs)
         sectors_where_many_crtrs = get_sectors_where_many_crtrs(sector_ids, Counter(sector_ids))
@@ -133,7 +133,7 @@ def fighting(cursor, db):
         # получаем id юзеров в нужных секторах
         users_id = []
         for sector in sectors_where_many_crtrs:
-            users_id.append(get_users(sector))
+            users_id.append(get_users(cursor, sector))
             # составляем пары существ для драки
             for el in users_id:
                 pares = make_pares(el)
@@ -143,15 +143,15 @@ def fighting(cursor, db):
                 b = pare.split()[1]
                 # есть ли в паре существ хищник (второй скилл)
                 if is_predator_in_pare(cursor, a):
-                    fertile = get_fertile(a)
-                    eat = get_eat(a)
+                    fertile = get_fertile(cursor, a)
+                    eat = get_eat(cursor, a)
                     if increase_amount(db, cursor, sector, a, fertile):
                         if dicrease_amount(db, cursor, sector, b, eat):
                             creatures_died(cursor, b, sector)
                 
                 elif is_predator_in_pare(cursor, b): 
-                    fertile = get_fertile(b)
-                    eat = get_eat(b)
+                    fertile = get_fertile(cursor, b)
+                    eat = get_eat(cursor, b)
                     if increase_amount(db, cursor, sector, b, fertile):
                         if dicrease_amount(db, cursor, sector, a, eat):
                             creatures_died(cursor, b, sector)

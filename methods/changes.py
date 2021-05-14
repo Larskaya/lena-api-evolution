@@ -1,5 +1,5 @@
 import time, psycopg2
-import flask
+#import flask
 from herbivorous import herbivorous_skill
 from predators import predators_skill
 from fight import fighting
@@ -12,7 +12,7 @@ def connect_db():
     conn = psycopg2.connect(
         database="evolution", 
         user="postgres", 
-
+     
         host="localhost", 
         port="5432"
     )
@@ -64,50 +64,51 @@ def finish_transaction():
 
 def main():
     table_data = get_creatures()
-    for record in table_data:
-        start_transaction()
-        # record: {'sector id': 400, 'user id': 1, 'amount': 55}
-        skills = get_skills(record[1]) 
-        print('user', record[1], 'with skills', skills)
-        indexes = get_skills_indexes(skills[0])
+    if table_data:
+        for record in table_data:
+            start_transaction()
+            # record: {'sector id': 400, 'user id': 1, 'amount': 55}
+            skills = get_skills(record[1]) 
+            print('user', record[1], 'with skills', skills)
+            indexes = get_skills_indexes(skills[0])
 
-        sector_type = get_sector_type(record[0])
+            sector_type = get_sector_type(record[0])
 
-        influence = {'food': 0, 'amount': 0}
+            influence = {'food': 0, 'amount': 0}
 
-        # move
-        print('indexes:', indexes)
-        if skill_types['move'] in indexes:
-            # herbivorous
-            if skill_types['herb'] in indexes:
-                # water
-                if sector_type == sector_types['water']:
-                    influence['food'] = 2
-                # forest
-                elif sector_type == sector_types['forest']:
-                    influence['amount'] = 1
-                herbivorous_skill( db, cursor, record, influence )
+            # move
+            print('indexes:', indexes)
+            if skill_types['move'] in indexes:
+                # herbivorous
+                if skill_types['herb'] in indexes:
+                    # water
+                    if sector_type == sector_types['water']:
+                        influence['food'] = 2
+                    # forest
+                    elif sector_type == sector_types['forest']:
+                        influence['amount'] = 1
+                    herbivorous_skill( db, cursor, record, influence )
 
-            # predators
-            if skill_types['pred'] in indexes:
-                # water
-                if sector_type == sector_types['water']:
-                    influence['food'] = 1
-                # forest
-                elif sector_type == sector_types['forest']:
-                    influence['amount'] = 2
-                predators_skill( db, cursor, record, influence )
+                # predators
+                if skill_types['pred'] in indexes:
+                    # water
+                    if sector_type == sector_types['water']:
+                        influence['food'] = 1
+                    # forest
+                    elif sector_type == sector_types['forest']:
+                        influence['amount'] = 2
+                    predators_skill( db, cursor, record, influence )
 
-        # without move
-        else:
-            # herbivorous
-            if skill_types['herb'] in indexes:
-                herbivorous_skill( db, cursor, record, influence )
-            # predators
-            elif skill_types['pred'] in indexes:
-                predators_skill( db, cursor, record, influence )
-            
-        finish_transaction()
+            # without move
+            else:
+                # herbivorous
+                if skill_types['herb'] in indexes:
+                    herbivorous_skill( db, cursor, record, influence )
+                # predators
+                elif skill_types['pred'] in indexes:
+                    predators_skill( db, cursor, record, influence )
+                
+            finish_transaction()
                 
         
 while True:

@@ -1,5 +1,13 @@
 import psycopg2
 
+from decrease_herbivorous import decrease_herbivorous
+
+def start_transaction(cursor):
+    cursor.execute('BEGIN')
+
+def finish_transaction(db, cursor):
+    cursor.execute('COMMIT')
+    db.commit
 
 def is_there_enough_food( cursor, num, sector_id ):
     print('SECTOR ID:', sector_id, type(sector_id))
@@ -10,7 +18,6 @@ def is_there_enough_food( cursor, num, sector_id ):
         if food[0] - num >= 0: return True
     return False
 
-
 def decrease_food( db, cursor, sector_id, infl_f ):
     print('decrease food')
     try:
@@ -19,11 +26,13 @@ def decrease_food( db, cursor, sector_id, infl_f ):
             print('herb food update')
             cursor.execute("UPDATE sectors SET food = food - (%s) WHERE id=(%s)", (f, sector_id, ))
             db.commit()
+        else:
+            decrease_herbivorous(db, cursor, sector_id)
+            return False
     except psycopg2.Error as e:
         print('Error update', str(e))
         return False
     return True
-
 
 def increase_amount( db, cursor, sector_id, user_id, infl_a ):
     print('increase amount')
@@ -35,7 +44,6 @@ def increase_amount( db, cursor, sector_id, user_id, infl_a ):
         print('Error update', str(e))
         return False
     return True
-
 
 def herbivorous_skill( db, cursor, record, influence ):
     infl_f = influence['food']

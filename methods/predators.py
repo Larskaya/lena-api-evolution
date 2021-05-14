@@ -1,3 +1,4 @@
+from decrease_predators import decrease_predators
 import psycopg2
 import random
 
@@ -59,6 +60,10 @@ def decrease_herb(db, cursor, herb_id, sector_id, infl_a):
         if is_there_enough_amount( cursor, a, herb_id, sector_id ):
             cursor.execute("UPDATE creatures SET amount = amount - (%s) WHERE user_id = (%s) AND sector_id = (%s)", (a, herb_id, sector_id, ))
             db.commit()
+        else:
+            decrease_predators(db, cursor, sector_id)
+            return False
+
     except psycopg2.Error as e:
         print('error', str(e))
         return False
@@ -86,6 +91,7 @@ def predators_skill( db, cursor, record, influence ):
             herbs.append(creature[0])
     if herbs: herb = random.choice(herbs) 
     infl_a = influence['amount']
-    if decrease_herb(db, cursor, int(herb), record[0], infl_a): increase_pred(db, cursor, record[1], record[0], infl_a)
+    if herb:
+        if decrease_herb(db, cursor, int(herb), record[0], infl_a): increase_pred(db, cursor, record[1], record[0], infl_a)
 
 
