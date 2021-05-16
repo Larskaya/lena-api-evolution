@@ -24,8 +24,8 @@ def login():
             res.headers.add('Access-Control-Allow-Origin', '*')
             return res
         
-        return jsonify( {"success": False} )
-    return render_template('docs.html')
+        return jsonify( {"success": False, 'error': 'code'} )
+    return jsonify( {"success": False, 'error': 'password not correct'} )
 
 
 @app.route('/auth/logout', methods=['POST'])
