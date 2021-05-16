@@ -1,6 +1,6 @@
 from __main__ import app
 import flask
-from flask import request, jsonify, make_response
+from flask import request, jsonify, make_response, render_template
 from App import App
 from werkzeug.security import check_password_hash
 
@@ -21,6 +21,7 @@ def login():
             res = make_response('authorization: {log}')
             res.set_cookie('code', str(code))
             res.set_cookie('user_id', str(user_id))
+            res.headers.add('Access-Control-Allow-Origin', '*')
             return res
         
         return jsonify( {"success": False} )
@@ -32,6 +33,7 @@ def logout():
     res = make_response("Cookie Removed")
     res.set_cookie('code', '', max_age=0)
     res.set_cookie('user_id', '', max_age=0)
+    res.headers.add('Access-Control-Allow-Origin', '*')
     return res
 
 
@@ -44,6 +46,7 @@ def logout_full():
             res = make_response("Cookie Removed")
             res.set_cookie('code', '', max_age=0)
             res.set_cookie('user_id', '', max_age=0)
+            res.headers.add('Access-Control-Allow-Origin', '*')
             return res
         return jsonify( {'error': 'error deleting from db'} )
     return jsonify( {'error': 'user has already been deleted'} )
