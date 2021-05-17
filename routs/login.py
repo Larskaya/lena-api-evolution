@@ -18,7 +18,8 @@ def login():
             if request.cookies.get('code') and request.cookies.get('user_id'):
                 log = str(request.cookies.get('code')) + str(request.cookies.get('user_id'))
 
-            res = make_response('authorization: {log}')
+            #res = make_response('authorization: {log}')
+            res = flask.jsonify('authorization: {log}')
             res.set_cookie('code', str(code))
             res.set_cookie('user_id', str(user_id))
             res.headers.add('Access-Control-Allow-Origin', '*')
