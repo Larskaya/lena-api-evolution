@@ -69,7 +69,7 @@ def add_profile():
     skill = request.form['skill']
     
     if len(skill) > 2 or int(skill) > 12:
-        return jsonify( {'error': 'skill can be a number from 1 to 5 '} )
+        return jsonify( {'error': 'skill can be a number from 1 to 12 '} )
 
     if not check_cookies():
         return jsonify( {'error': 'in cookies'} )

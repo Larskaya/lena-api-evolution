@@ -18,7 +18,7 @@ def connect_db():
         conn = psycopg2.connect(
             database="evolution", 
             user="postgres", 
-
+            
             host="localhost", 
             port="5432"
         )
@@ -33,13 +33,33 @@ def get_db():
         flask.g.link_db = connect_db()
     return flask.g.link_db
 
-@app.route('/')
+@app.route('/main-page')
 def documentation():
+    #return render_template( 'sftp://v296823.hosted-by-vdsina.ru/home/lena/api/index.html' )
     return render_template( 'docs.html' )
 
 from routs import login, sectors, add_sector, messages, profile, add_skill, user
 import sectors_occupy
 
+
+
+# import sys
+# s = sys.path[0]
+# print('sys', s)
+
+# s += r"\\evolution_game"
+# print(s)
+
+# import pandas.Pandas
+# print(Pandas.pr())
+
 if __name__ == '__main__':
     app.run(debug=True)
 
+
+
+# import sys
+# sys.path[0] += r"\\folder"
+# import index
+
+# /home/lena/api/

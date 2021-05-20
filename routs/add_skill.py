@@ -1,7 +1,7 @@
 import flask, time
 from flask import request, jsonify
 from __main__ import app
-
+from routs.skills_matrix import Matrix
 from App import App
 
 
@@ -37,6 +37,8 @@ def add_skill():
     old_skills = App.get_skills(user_id)[0]
     skills = replace_skills(skill, old_skills)
 
-    res = App.add_skill(user_id, skills)
+    abilities = Matrix.get_skill_matrix(skill)
+
+    res = App.add_skill(user_id, skills, abilities)
     if res: return jsonify( {'success': True} )
     else: return jsonify( {'error': 'skill not update'} )

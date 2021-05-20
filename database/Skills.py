@@ -15,8 +15,9 @@ class SkillsDB:
         return True 
 
     def addSkill(self, user_id, skills, ab):
+        print('skills', skills, type(skills))
         try:
-            self.__cur.execute(f"UPDATE skills SET skills ='{skills}' AND fight={ab['fight']} AND friend={ab['friend']} AND hide={ab['hide']} AND eat ={ab['eat']} AND fertile={ab['fertile']} WHERE user_id = {user_id}")
+            self.__cur.execute(f"UPDATE skills SET skills='{skills}', fight={ab['fight']},friend={ab['friend']}, hide={ab['hide']}, eat ={ab['eat']}, fertile={ab['fertile']} WHERE user_id = {user_id}")
             self.__db.commit()
             if self.__cur.rowcount == 0: return False
         except psycopg2.Error as e:

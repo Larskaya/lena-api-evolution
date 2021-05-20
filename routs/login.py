@@ -22,6 +22,7 @@ def login():
             res = flask.jsonify('authorization: {log}')
             res.set_cookie('code', str(code))
             res.set_cookie('user_id', str(user_id))
+            res.headers.add('Set-Cookie','cross-site-cookie=bar; SameSite=None; Secure')
             res.headers.add('Access-Control-Allow-Origin', '*')
             return res
         
@@ -34,6 +35,7 @@ def logout():
     res = make_response("Cookie Removed")
     res.set_cookie('code', '', max_age=0)
     res.set_cookie('user_id', '', max_age=0)
+    #res.headers.add('Set-Cookie','cross-site-cookie=bar; SameSite=None; Secure')
     res.headers.add('Access-Control-Allow-Origin', '*')
     return res
 

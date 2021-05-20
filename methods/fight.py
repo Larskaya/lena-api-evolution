@@ -53,7 +53,7 @@ def get_users(cursor, sector_id):
     return False
 
 
-def is_predator_in_pare(cursor, crtr):
+def is_predator(cursor, crtr):
     cursor.execute(f"SELECT skills FROM skills WHERE user_id = {crtr}")
     res = cursor.fetchone()[0]
     if res: 
@@ -127,9 +127,6 @@ def fighting(cursor, db):
         sector_ids = get_sector_ids(sectors_with_crtrs)
         sectors_where_many_crtrs = get_sectors_where_many_crtrs(sector_ids, Counter(sector_ids))
 
-        # создадим словарь сектор и его существа
-        sctrs_with_crtrs = {}
-
         # получаем id юзеров в нужных секторах
         users_id = []
         for sector in sectors_where_many_crtrs:
@@ -141,21 +138,24 @@ def fighting(cursor, db):
             for pare in pares:
                 a = pare.split()[0]
                 b = pare.split()[1]
+                crtrs = [a, b]
+                for crtr in crtrs:
+                    if is_predator(cursor, crtr):
+                        pass
                 # есть ли в паре существ хищник (второй скилл)
-                if is_predator_in_pare(cursor, a):
-                    fertile = get_fertile(cursor, a)
-                    eat = get_eat(cursor, a)
-                    if increase_amount(db, cursor, sector, a, fertile):
-                        if dicrease_amount(db, cursor, sector, b, eat):
-                            creatures_died(cursor, b, sector)
+                # if is_predator_in_pare(cursor, a):
+                #     fertile = get_fertile(cursor, a)
+                #     eat = get_eat(cursor, a)
+                #     if increase_amount(db, cursor, sector, a, fertile):
+                #         if dicrease_amount(db, cursor, sector, b, eat):
+                #             creatures_died(cursor, b, sector)
                 
-                elif is_predator_in_pare(cursor, b): 
-                    fertile = get_fertile(cursor, b)
-                    eat = get_eat(cursor, b)
-                    if increase_amount(db, cursor, sector, b, fertile):
-                        if dicrease_amount(db, cursor, sector, a, eat):
-                            creatures_died(cursor, b, sector)
-
+                # elif is_predator_in_pare(cursor, b): 
+                #     fertile = get_fertile(cursor, b)
+                #     eat = get_eat(cursor, b)
+                #     if increase_amount(db, cursor, sector, b, fertile):
+                #         if dicrease_amount(db, cursor, sector, a, eat):
+                #             creatures_died(cursor, b, sector) 
     
 
 

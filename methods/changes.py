@@ -12,7 +12,7 @@ def connect_db():
     conn = psycopg2.connect(
         database="evolution", 
         user="postgres", 
-     
+        
         host="localhost", 
         port="5432"
     )
