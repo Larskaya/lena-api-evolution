@@ -42,16 +42,6 @@ class CreaturesDB:
             print('error reading from db')
         return []
 
-    def addUserToSector(self, sector_id, user_id, amount, profile_type):
-        try:
-            self.__cur.execute("INSERT INTO creatures (sector_id, user_id, amount, type) VALUES (%s, %s, %s, %s)", 
-            (sector_id, user_id, amount, profile_type) )
-            self.__db.commit()
-        except psycopg2.Error as e:
-            print( 'error adding '+ str(e) )
-            return False
-        return True
-
     def checkUserInSector(self, user_id, sector_id):
         self.__cur.execute(f"SELECT COUNT(*) FROM creatures WHERE user_id='{user_id}' AND sector_id={sector_id}")
         res = self.__cur.fetchone()

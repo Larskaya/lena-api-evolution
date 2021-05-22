@@ -5,7 +5,7 @@ from database.Creatures import CreaturesDB
 from database.Sectors import SectorsDB
 from database.Users import UsersDB
 from database.Profiles import ProfilesDB
-from database.Messages import MessagesDB 
+#from database.Messages import MessagesDB 
 from database.Skills import SkillsDB
 
 class App():

@@ -17,7 +17,6 @@ def connect_db():
 db = connect_db()
 cursor = db.cursor()
 
-
 def create_user_data():
     letters = 'qazxswedcvfrtgbnhyujmkiolp'
     for_psw = 'qazxswedcvfrtgbnhyujmkiolp0123456789'
@@ -29,8 +28,6 @@ def create_user_data():
     hpsw = generate_password_hash( psw )
     return name, login, hpsw, email
 
-
-
 def addFirstSkill(cursor, db, user_id, skills, ab):
     try:
         cursor.execute("INSERT INTO skills (user_id, skills, fight, friend, hide, eat, fertile) VALUES (%s, %s, %s, %s, %s, %s, %s)", (user_id, skills, ab['fight'], ab['friend'], ab['hide'], ab['eat'], ab['fertile']))
@@ -40,14 +37,12 @@ def addFirstSkill(cursor, db, user_id, skills, ab):
         return False
     return True 
 
-
 def checkAddingUser(login):
     cursor.execute(f"SELECT COUNT(*) FROM users WHERE login='{login}' ")
     res = cursor.fetchone()
     if res[0] > 0:
         return False
     return True
-
 
 def add_user(cursor, db, name, hpsw, login, email):
     try:
@@ -61,7 +56,6 @@ def add_user(cursor, db, name, hpsw, login, email):
         return False
     return True
 
-
 def get_userId(login):
     try:
         cursor.execute(f"SELECT id FROM users WHERE login='{login}'")
@@ -70,7 +64,6 @@ def get_userId(login):
     except:
         print('error reading from db')
     return []
-
 
 def updateAuthUser(cursor, db, code, user_id):
     try:
@@ -81,8 +74,6 @@ def updateAuthUser(cursor, db, code, user_id):
         print( 'error adding '+ str(e) )
         return False
     return True
-
-
 
 def add_auth_user(cursor, db , user_id):
     code = ''
@@ -108,7 +99,6 @@ def add_profile(cursor, user_id, color):
         print('error adding', str(e))
     return True
 
-
 def checkUserInSector(cursor, user_id, sector_id):
     cursor.execute(f"SELECT COUNT(*) FROM creatures WHERE user_id='{user_id}' AND sector_id={sector_id}")
     res = cursor.fetchone()
@@ -116,8 +106,6 @@ def checkUserInSector(cursor, user_id, sector_id):
         print(True)
         return True
     return False
-
-
 
 def addUserCreaturesAmount(cursor, id_sector, id_user, amount):
     try:
@@ -129,8 +117,6 @@ def addUserCreaturesAmount(cursor, id_sector, id_user, amount):
         print( 'error adding '+ str(e) )
         return False
     return True
-
-
 
 def add_creature(cursor, db):
     
@@ -156,9 +142,6 @@ def add_creature(cursor, db):
             return 4
         return 5
     return 6
-
-
-
 
 counter = 20
 while counter > 0:

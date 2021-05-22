@@ -27,7 +27,6 @@ def get_skills_indexes(skills):
     counter = 0
     indexes = []
     while counter < len(skills):
-        #print('where while -', counter, 'skills -', skills, len(skills))
         if '1' == skills[counter]:
             print('IF')
             indexes.append(counter)

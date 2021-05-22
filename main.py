@@ -1,8 +1,8 @@
 import flask
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 import psycopg2, os 
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 app.config['SECRET_KEY'] = 'GsGFfDduiAGF1344tyoDGaFagfG1'
 app.config.from_object(__name__)
 
@@ -26,6 +26,7 @@ def connect_db():
         print('connection error', str(e))
     return conn
 
+
 def get_db():
     print('get db', flask.g)
     """ соединение с бд, если оно еще не установлено"""
@@ -33,33 +34,22 @@ def get_db():
         flask.g.link_db = connect_db()
     return flask.g.link_db
 
-@app.route('/main-page')
+
+@app.route('/static/<path:path>')
+def send_static(path):
+    return send_from_directory('templates/react/static/', path)
+
+
+@app.route('/')
 def documentation():
-    #return render_template( 'sftp://v296823.hosted-by-vdsina.ru/home/lena/api/index.html' )
-    return render_template( 'docs.html' )
+    return render_template( 'react/index.html' )
+
 
 from routs import login, sectors, add_sector, messages, profile, add_skill, user
 import sectors_occupy
 
 
-
-# import sys
-# s = sys.path[0]
-# print('sys', s)
-
-# s += r"\\evolution_game"
-# print(s)
-
-# import pandas.Pandas
-# print(Pandas.pr())
-
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0')
 
 
-
-# import sys
-# sys.path[0] += r"\\folder"
-# import index
-
-# /home/lena/api/
