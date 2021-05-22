@@ -3,7 +3,7 @@ from flask import Flask, render_template, send_from_directory
 import psycopg2, os 
 
 app = Flask(__name__, static_url_path='')
-app.config['SECRET_KEY'] = 'GsGFfDduiAGF1344tyoDGaFagfG1'
+app.config['SECRET_KEY'] = ''
 app.config.from_object(__name__)
 
 DATABASE = '/tmp/evolution.db'
