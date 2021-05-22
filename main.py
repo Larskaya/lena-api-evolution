@@ -8,7 +8,7 @@ app.config.from_object(__name__)
 
 DATABASE = '/tmp/evolution.db'
 DEBUG = True
-SECRET_KEY = 'afe\shrtrjkl234frh#geashhdrfzh1233'
+SECRET_KEY = ''
 
 app.config.update( dict(DATABASE=os.path.join(app.root_path, 'evolution.db')) )
 
