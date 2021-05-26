@@ -2,10 +2,10 @@ from __main__ import app, get_db
 from database.Creatures import CreaturesDB
 from database.Sectors import SectorsDB
 from database.Skills import SkillsDB
-import json
+#import json
 
 import flask
-from flask import jsonify
+#from flask import jsonify
 
 
 
@@ -16,12 +16,15 @@ def get_sectors():
     db2 = SectorsDB( get_db() )
     db3 = SkillsDB( get_db() )
 
-    user_data = {}
-    data = []
-    sectors_data = db2.getSectors()
-    creatures = []
 
+    data = []
+    user_data = {}
+    
+    sectors_data = db2.getSectors()
+    sectors_data = sorted(sectors_data)
+    
     for sector in sectors_data:
+        creatures = []
         all_creatures = db1.getSectorCreatures(sector[0])
         if all_creatures:
             for user_id in all_creatures:
@@ -43,12 +46,7 @@ def get_sectors():
             'creatures': creatures
         }
 
-
-
-
         data.append(b)
-
-    print('lenght of data', len(data))
 
     response = flask.jsonify(data)
     response.headers.add('Access-Control-Allow-Origin', '*')
