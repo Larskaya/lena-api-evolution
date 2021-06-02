@@ -121,3 +121,22 @@ class App():
         users = g.data.getUsers()
         if users: return users
         return False
+
+
+    def check_auth_user(user_login):
+        g.data = UsersDB( get_db() )
+        if g.data.checkAuthUser(user_login): return True
+        return False
+
+
+    def getUserIdbyLogin(login):
+        g.data = UsersDB( get_db() )
+        user_id = g.data.getUserIdbyLogin(login)
+        if user_id: return user_id
+        return False
+
+    def getUserCode(user_id):
+        g.data = UsersDB( get_db() )
+        code = g.data.getUserCode(user_id)
+        if code: return code
+        return False
