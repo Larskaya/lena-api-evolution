@@ -47,14 +47,31 @@ class App():
             return True
         return False
 
+
     def login(login):
+        #if login:
+        print('login in APP:', login)
         g.data = UsersDB( get_db() )
-        user_id = g.data.getUserId( login )[0]
-        user_hpsw = g.data.getUserPsw( user_id )[0]
+        user_id = g.data.getUserId( login )
+        if user_id: 
+            user_id = user_id[0]
+        else:
+            return False
+
+        user_hpsw = g.data.getUserPsw( user_id )
+        if user_hpsw: 
+            user_hpsw = user_hpsw[0]
+        else:
+            return False
+
         code = g.data.addAuthUser( user_id )
+        #print('code', code)
         if user_id and user_hpsw and code:
             return user_id, user_hpsw, code
         return False
+
+
+
 
     def add_sector(position_top, position_left, food, type_):
         g.data = SectorsDB( get_db() )
